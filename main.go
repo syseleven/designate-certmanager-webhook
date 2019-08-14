@@ -3,12 +3,22 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net"
+	"net/http"
 	"os"
+	"strings"
+	"time"
+
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack"
+	"github.com/gophercloud/gophercloud/openstack/dns/v2/recordsets"
 
 	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
-	//"k8s.io/client-go/kubernetes"
+	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/rest"
+	
 
+	"github.com/kubernetes-incubator/external-dns/pkg/tlsutils"
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/cmd"
 )
@@ -26,7 +36,7 @@ func main() {
 	// webhook, where the Name() method will be used to disambiguate between
 	// the different implementations.
 	cmd.RunWebhookServer(GroupName,
-		&customDNSProviderSolver{},
+		&designateDNSProviderSolver{},
 	)
 }
 
@@ -35,13 +45,7 @@ func main() {
 // To do so, it must implement the `github.com/jetstack/cert-manager/pkg/acme/webhook.Solver`
 // interface.
 type designateDNSProviderSolver struct {
-	// If a Kubernetes 'clientset' is needed, you must:
-	// 1. uncomment the additional `client` field in this structure below
-	// 2. uncomment the "k8s.io/client-go/kubernetes" import at the top of the file
-	// 3. uncomment the relevant code in the Initialize method below
-	// 4. ensure your webhook's service account has the required RBAC role
-	//    assigned to it for interacting with the Kubernetes APIs you need.
-	//client kubernetes.Clientset
+	client *gophercloud.ServiceClient
 }
 
 // customDNSProviderConfig is a structure that is used to decode into when
@@ -58,7 +62,7 @@ type designateDNSProviderSolver struct {
 // You should not include sensitive information here. If credentials need to
 // be used by your provider here, you should reference a Kubernetes Secret
 // resource and fetch these credentials using a Kubernetes clientset.
-type customDNSProviderConfig struct {
+type designateDNSProviderConfig struct {
 	// Change the two fields below according to the format of the configuration
 	// to be decoded.
 	// These fields will be set by users in the
@@ -74,7 +78,7 @@ type customDNSProviderConfig struct {
 // solvers configured with the same Name() **so long as they do not co-exist
 // within a single webhook deployment**.
 // For example, `cloudflare` may be used as the name of a solver.
-func (c *customDNSProviderSolver) Name() string {
+func (c *designateDNSProviderSolver) Name() string {
 	return "my-custom-solver"
 }
 
@@ -83,7 +87,7 @@ func (c *customDNSProviderSolver) Name() string {
 // This method should tolerate being called multiple times with the same value.
 // cert-manager itself will later perform a self check to ensure that the
 // solver has correctly configured the DNS provider.
-func (c *customDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
+func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 	cfg, err := loadConfig(ch.Config)
 	if err != nil {
 		return err
@@ -102,7 +106,7 @@ func (c *customDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 // value provided on the ChallengeRequest should be cleaned up.
 // This is in order to facilitate multiple DNS validations for the same domain
 // concurrently.
-func (c *customDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
+func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 	// TODO: add code that deletes a record from the DNS provider's console
 	return nil
 }
@@ -116,25 +120,21 @@ func (c *customDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 // provider accounts.
 // The stopCh can be used to handle early termination of the webhook, in cases
 // where a SIGTERM or similar signal is sent to the webhook process.
-func (c *customDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, stopCh <-chan struct{}) error {
-	///// UNCOMMENT THE BELOW CODE TO MAKE A KUBERNETES CLIENTSET AVAILABLE TO
-	///// YOUR CUSTOM DNS PROVIDER
+func (c *designateDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, stopCh <-chan struct{}) error {
 
-	//cl, err := kubernetes.NewForConfig(kubeClientConfig)
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//c.client = cl
-
-	///// END OF CODE TO MAKE KUBERNETES CLIENTSET AVAILABLE
+	cl, err := createDesignateServiceClient()
+	if err != nil {
+		return err
+	}
+	
+	c.client = cl
 	return nil
 }
 
 // loadConfig is a small helper function that decodes JSON configuration into
 // the typed config struct.
-func loadConfig(cfgJSON *extapi.JSON) (customDNSProviderConfig, error) {
-	cfg := customDNSProviderConfig{}
+func loadConfig(cfgJSON *extapi.JSON) (designateDNSProviderConfig, error) {
+	cfg := designateDNSProviderConfig{}
 	// handle the 'base case' where no configuration has been provided
 	if cfgJSON == nil {
 		return cfg, nil
@@ -144,4 +144,126 @@ func loadConfig(cfgJSON *extapi.JSON) (customDNSProviderConfig, error) {
 	}
 
 	return cfg, nil
+}
+
+
+// interface between provider and OpenStack DNS API
+type designateClientInterface interface {
+
+	// CreateRecordSet creates recordset in the given DNS zone
+	CreateRecordSet(zoneID string, opts recordsets.CreateOpts) (string, error)
+
+	// DeleteRecordSet deletes recordset in the given DNS zone
+	DeleteRecordSet(zoneID, recordSetID string) error
+}
+
+// implementation of the designateClientInterface
+type designateClient struct {
+	serviceClient *gophercloud.ServiceClient
+}
+
+// factory function for the designateClientInterface
+func newDesignateClient() (designateClientInterface, error) {
+	serviceClient, err := createDesignateServiceClient()
+	if err != nil {
+		return nil, err
+	}
+	return &designateClient{serviceClient}, nil
+}
+
+// copies environment variables to new names without overwriting existing values
+func remapEnv(mapping map[string]string) {
+	for k, v := range mapping {
+		currentVal := os.Getenv(k)
+		newVal := os.Getenv(v)
+		if currentVal == "" && newVal != "" {
+			os.Setenv(k, newVal)
+		}
+	}
+}
+
+// returns OpenStack Keystone authentication settings by obtaining values from standard environment variables.
+// also fixes incompatibilities between gophercloud implementation and *-stackrc files that can be downloaded
+// from OpenStack dashboard in latest versions
+func getAuthSettings() (gophercloud.AuthOptions, error) {
+	remapEnv(map[string]string{
+		"OS_TENANT_NAME": "OS_PROJECT_NAME",
+		"OS_TENANT_ID":   "OS_PROJECT_ID",
+		"OS_DOMAIN_NAME": "OS_USER_DOMAIN_NAME",
+		"OS_DOMAIN_ID":   "OS_USER_DOMAIN_ID",
+	})
+
+	opts, err := openstack.AuthOptionsFromEnv()
+	if err != nil {
+		return gophercloud.AuthOptions{}, err
+	}
+	opts.AllowReauth = true
+	if !strings.HasSuffix(opts.IdentityEndpoint, "/") {
+		opts.IdentityEndpoint += "/"
+	}
+	if !strings.HasSuffix(opts.IdentityEndpoint, "/v2.0/") && !strings.HasSuffix(opts.IdentityEndpoint, "/v3/") {
+		opts.IdentityEndpoint += "v2.0/"
+	}
+	return opts, nil
+}
+
+// authenticate in OpenStack and obtain Designate service endpoint
+func createDesignateServiceClient() (*gophercloud.ServiceClient, error) {
+	opts, err := getAuthSettings()
+	if err != nil {
+		return nil, err
+	}
+	log.Infof("Using OpenStack Keystone at %s", opts.IdentityEndpoint)
+	authProvider, err := openstack.NewClient(opts.IdentityEndpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	tlsConfig, err := tlsutils.CreateTLSConfig("OPENSTACK")
+	if err != nil {
+		return nil, err
+	}
+
+	transport := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+		TLSClientConfig:       tlsConfig,
+	}
+	authProvider.HTTPClient.Transport = transport
+
+	if err = openstack.Authenticate(authProvider, opts); err != nil {
+		return nil, err
+	}
+
+	eo := gophercloud.EndpointOpts{
+		Region: os.Getenv("OS_REGION_NAME"),
+	}
+
+	client, err := openstack.NewDNSV2(authProvider, eo)
+	if err != nil {
+		return nil, err
+	}
+	log.Infof("Found OpenStack Designate service at %s", client.Endpoint)
+	return client, nil
+}
+
+// CreateRecordSet creates recordset in the given DNS zone
+func (c designateClient) CreateRecordSet(zoneID string, opts recordsets.CreateOpts) (string, error) {
+	r, err := recordsets.Create(c.serviceClient, zoneID, opts).Extract()
+	if err != nil {
+		return "", err
+	}
+	return r.ID, nil
+}
+
+// DeleteRecordSet deletes recordset in the given DNS zone
+func (c designateClient) DeleteRecordSet(zoneID, recordSetID string) error {
+	return recordsets.Delete(c.serviceClient, zoneID, recordSetID).ExtractErr()
 }

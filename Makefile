@@ -1,4 +1,4 @@
-IMAGE_NAME := "designate-certmanager-webhook"
+IMAGE_NAME := "syseleven/designate-certmanager-webhook"
 IMAGE_TAG := "latest"
 
 OUT := $(shell pwd)/_out
