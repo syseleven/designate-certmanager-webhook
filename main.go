@@ -79,7 +79,7 @@ type designateDNSProviderConfig struct {
 // within a single webhook deployment**.
 // For example, `cloudflare` may be used as the name of a solver.
 func (c *designateDNSProviderSolver) Name() string {
-	return "my-custom-solver"
+	return "designate-dns-solver"
 }
 
 // Present is responsible for actually presenting the DNS record with the
@@ -96,7 +96,15 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 	// TODO: do something more useful with the decoded configuration
 	fmt.Printf("Decoded configuration %v", cfg)
 
-	// TODO: add code that sets a record in the DNS provider's console
+	var opts recordsets.CreateOpts
+	opts.Name = ch.ResolvedFQDN
+	opts.Records[0] = ch.Key
+	opts.Type = ch.Type
+
+	_, err = recordsets.Create(c.client, ch.ResolvedZone, opts).Extract()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -107,7 +115,15 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 // This is in order to facilitate multiple DNS validations for the same domain
 // concurrently.
 func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
-	// TODO: add code that deletes a record from the DNS provider's console
+	_, err := loadConfig(ch.Config)
+	if err != nil {
+		return err
+	}
+
+	err = recordsets.Delete(c.client, ch.ResolvedZone, ch.ResolvedFQDN).ExtractErr()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
