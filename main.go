@@ -12,11 +12,11 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack"
 	"github.com/gophercloud/gophercloud/openstack/dns/v2/recordsets"
+	"github.com/gophercloud/gophercloud/openstack/dns/v2/zones"
 
 	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/rest"
-	
 
 	"github.com/kubernetes-incubator/external-dns/pkg/tlsutils"
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
@@ -63,13 +63,7 @@ type designateDNSProviderSolver struct {
 // be used by your provider here, you should reference a Kubernetes Secret
 // resource and fetch these credentials using a Kubernetes clientset.
 type designateDNSProviderConfig struct {
-	// Change the two fields below according to the format of the configuration
-	// to be decoded.
-	// These fields will be set by users in the
-	// `issuer.spec.acme.dns01.providers.webhook.config` field.
-
-	//Email           string `json:"email"`
-	//APIKeySecretRef v1alpha1.SecretKeySelector `json:"apiKeySecretRef"`
+	Email           string `json:"email"`
 }
 
 // Name is used as the name for this DNS solver when referencing it on the ACME
@@ -79,7 +73,7 @@ type designateDNSProviderConfig struct {
 // within a single webhook deployment**.
 // For example, `cloudflare` may be used as the name of a solver.
 func (c *designateDNSProviderSolver) Name() string {
-	return "designate-dns-solver"
+	return "designateDNS"
 }
 
 // Present is responsible for actually presenting the DNS record with the
@@ -92,16 +86,29 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 	if err != nil {
 		return err
 	}
-
-	// TODO: do something more useful with the decoded configuration
 	fmt.Printf("Decoded configuration %v", cfg)
+
+	listOpts := zones.ListOpts{
+		Email: cfg.Email,
+		Name: ch.ResolvedZone,
+	}
+
+	allPages, err := zones.List(c.client, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allZones, err := zones.ExtractZones(allPages)
+	if err != nil {
+		panic(err)
+	}
 
 	var opts recordsets.CreateOpts
 	opts.Name = ch.ResolvedFQDN
 	opts.Records[0] = ch.Key
 	opts.Type = ch.Type
 
-	_, err = recordsets.Create(c.client, ch.ResolvedZone, opts).Extract()
+	_, err = recordsets.Create(c.client, allZones[0].ID, opts).Extract()
 	if err != nil {
 		return err
 	}
@@ -176,15 +183,6 @@ type designateClientInterface interface {
 // implementation of the designateClientInterface
 type designateClient struct {
 	serviceClient *gophercloud.ServiceClient
-}
-
-// factory function for the designateClientInterface
-func newDesignateClient() (designateClientInterface, error) {
-	serviceClient, err := createDesignateServiceClient()
-	if err != nil {
-		return nil, err
-	}
-	return &designateClient{serviceClient}, nil
 }
 
 // copies environment variables to new names without overwriting existing values
