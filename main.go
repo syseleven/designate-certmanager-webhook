@@ -122,12 +122,42 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 // This is in order to facilitate multiple DNS validations for the same domain
 // concurrently.
 func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
-	_, err := loadConfig(ch.Config)
+	cfg, err := loadConfig(ch.Config)
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Decoded configuration %v", cfg)
 
-	err = recordsets.Delete(c.client, ch.ResolvedZone, ch.ResolvedFQDN).ExtractErr()
+	listOpts := zones.ListOpts{
+		Email: cfg.Email,
+		Name: ch.ResolvedZone,
+	}
+
+	allPages, err := zones.List(c.client, listOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allZones, err := zones.ExtractZones(allPages)
+	if err != nil {
+		panic(err)
+	}
+
+	recordListOpts := recordsets.ListOpts{
+		Name: ch.ResolvedFQDN,
+	}
+
+	allRecordPages, err := recordsets.ListByZone(c.client, allZones[0].ID, recordListOpts).AllPages()
+	if err != nil {
+		panic(err)
+	}
+
+	allRRs, err := recordsets.ExtractRecordSets(allRecordPages)
+	if err != nil {
+		panic(err)
+	}
+
+	err = recordsets.Delete(c.client, allZones[0].ID, allRRs[0].ID).ExtractErr()
 	if err != nil {
 		return err
 	}
