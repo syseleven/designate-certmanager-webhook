@@ -145,6 +145,7 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 
 	recordListOpts := recordsets.ListOpts{
 		Name: ch.ResolvedFQDN,
+		Type: "TXT",
 	}
 
 	allRecordPages, err := recordsets.ListByZone(c.client, allZones[0].ID, recordListOpts).AllPages()
