@@ -105,7 +105,7 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 
 	var opts recordsets.CreateOpts
 	opts.Name = ch.ResolvedFQDN
-	opts.Records[0] = ch.Key
+	opts.Records = []string{ch.Key}
 	opts.Type = ch.Type
 
 	_, err = recordsets.Create(c.client, allZones[0].ID, opts).Extract()
