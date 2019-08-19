@@ -73,6 +73,7 @@ type designateDNSProviderConfig struct {
 // within a single webhook deployment**.
 // For example, `cloudflare` may be used as the name of a solver.
 func (c *designateDNSProviderSolver) Name() string {
+	log.Debugf("Name() called")
 	return "designateDNS"
 }
 
@@ -82,11 +83,12 @@ func (c *designateDNSProviderSolver) Name() string {
 // cert-manager itself will later perform a self check to ensure that the
 // solver has correctly configured the DNS provider.
 func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
+	log.Debugf("Present() called ch.ResolvedZone=%s ch.ResolvedFQDN=%s ch.Type=%s", ch.ResolvedZone, ch.ResolvedFQDN, ch.Type)
+
 	cfg, err := loadConfig(ch.Config)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Decoded configuration %v", cfg)
 
 	listOpts := zones.ListOpts{
 		Email: cfg.Email,
@@ -122,11 +124,12 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 // This is in order to facilitate multiple DNS validations for the same domain
 // concurrently.
 func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
+	log.Debugf("CleanUp called ch.ResolvedZone=%s ch.ResolvedFQDN=%s ch.Type=%s", ch.ResolvedZone, ch.ResolvedFQDN)
+
 	cfg, err := loadConfig(ch.Config)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Decoded configuration %v", cfg)
 
 	listOpts := zones.ListOpts{
 		Email: cfg.Email,
@@ -175,6 +178,7 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 // The stopCh can be used to handle early termination of the webhook, in cases
 // where a SIGTERM or similar signal is sent to the webhook process.
 func (c *designateDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, stopCh <-chan struct{}) error {
+	log.Debugf("Initialize called")
 
 	cl, err := createDesignateServiceClient()
 	if err != nil {
