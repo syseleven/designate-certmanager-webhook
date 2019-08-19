@@ -105,15 +105,20 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 		return err;
 	}
 
+	if len(allZones) != 1 {
+		return fmt.Errorf("Present: Expected to find 1 zone %s, found %i", ch.ResolvedZone, len(allZones))
+	}
+
 	var opts recordsets.CreateOpts
 	opts.Name = ch.ResolvedFQDN
 	opts.Records = []string{ch.Key}
-	opts.Type = ch.Type
+	opts.Type = "TXT"
 
 	_, err = recordsets.Create(c.client, allZones[0].ID, opts).Extract()
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -146,9 +151,14 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 		return err;
 	}
 
+	if len(allZones) != 1 {
+		return fmt.Errorf("CleanUp: Expected to find 1 zone %s, found %i", ch.ResolvedZone, len(allZones))
+	}
+
 	recordListOpts := recordsets.ListOpts{
 		Name: ch.ResolvedFQDN,
 		Type: "TXT",
+		Data: ch.Key,
 	}
 
 	allRecordPages, err := recordsets.ListByZone(c.client, allZones[0].ID, recordListOpts).AllPages()
@@ -161,6 +171,11 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 		return err;
 	}
 
+	if len(allRRs) != 1 {
+		return fmt.Errorf("CleanUp: Expected to find 1 recordset matching %s in zone %s, found %i", ch.ResolvedFQDN, ch.ResolvedZone, len(allRRs))
+	}
+
+	// TODO rather than deleting the whole recordset we may have to delete individual records from it, i.e. perform an update rather than a delete
 	err = recordsets.Delete(c.client, allZones[0].ID, allRRs[0].ID).ExtractErr()
 	if err != nil {
 		return err
@@ -204,16 +219,6 @@ func loadConfig(cfgJSON *extapi.JSON) (designateDNSProviderConfig, error) {
 	return cfg, nil
 }
 
-
-// interface between provider and OpenStack DNS API
-type designateClientInterface interface {
-
-	// CreateRecordSet creates recordset in the given DNS zone
-	CreateRecordSet(zoneID string, opts recordsets.CreateOpts) (string, error)
-
-	// DeleteRecordSet deletes recordset in the given DNS zone
-	DeleteRecordSet(zoneID, recordSetID string) error
-}
 
 // implementation of the designateClientInterface
 type designateClient struct {
@@ -301,18 +306,4 @@ func createDesignateServiceClient() (*gophercloud.ServiceClient, error) {
 	}
 	log.Infof("Found OpenStack Designate service at %s", client.Endpoint)
 	return client, nil
-}
-
-// CreateRecordSet creates recordset in the given DNS zone
-func (c designateClient) CreateRecordSet(zoneID string, opts recordsets.CreateOpts) (string, error) {
-	r, err := recordsets.Create(c.serviceClient, zoneID, opts).Extract()
-	if err != nil {
-		return "", err
-	}
-	return r.ID, nil
-}
-
-// DeleteRecordSet deletes recordset in the given DNS zone
-func (c designateClient) DeleteRecordSet(zoneID, recordSetID string) error {
-	return recordsets.Delete(c.serviceClient, zoneID, recordSetID).ExtractErr()
 }
