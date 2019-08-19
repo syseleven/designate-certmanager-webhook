@@ -27,9 +27,9 @@ spec:
           args:
             - --tls-cert-file=/tls/tls.crt
             - --tls-private-key-file=/tls/tls.key
-          env:
-            - name: GROUP_NAME
-              value: {{ .Values.groupName | quote }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.credentialsSecret }}
           ports:
             - name: https
               containerPort: 443
