@@ -83,7 +83,7 @@ func (c *designateDNSProviderSolver) Name() string {
 // cert-manager itself will later perform a self check to ensure that the
 // solver has correctly configured the DNS provider.
 func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
-	log.Debugf("Present() called ch.ResolvedZone=%s ch.ResolvedFQDN=%s ch.Type=%s", ch.ResolvedZone, ch.ResolvedFQDN, ch.Type)
+	log.Debugf("Present() called ch.DNSName=%s ch.ResolvedZone=%s ch.ResolvedFQDN=%s ch.Type=%s", ch.DNSName, ch.ResolvedZone, ch.ResolvedFQDN, ch.Type)
 
 	cfg, err := loadConfig(ch.Config)
 	if err != nil {
@@ -97,12 +97,12 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 
 	allPages, err := zones.List(c.client, listOpts).AllPages()
 	if err != nil {
-		panic(err)
+		return err;
 	}
 
 	allZones, err := zones.ExtractZones(allPages)
 	if err != nil {
-		panic(err)
+		return err;
 	}
 
 	var opts recordsets.CreateOpts
@@ -138,12 +138,12 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 
 	allPages, err := zones.List(c.client, listOpts).AllPages()
 	if err != nil {
-		panic(err)
+		return err;
 	}
 
 	allZones, err := zones.ExtractZones(allPages)
 	if err != nil {
-		panic(err)
+		return err;
 	}
 
 	recordListOpts := recordsets.ListOpts{
@@ -153,12 +153,12 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 
 	allRecordPages, err := recordsets.ListByZone(c.client, allZones[0].ID, recordListOpts).AllPages()
 	if err != nil {
-		panic(err)
+		return err;
 	}
 
 	allRRs, err := recordsets.ExtractRecordSets(allRecordPages)
 	if err != nil {
-		panic(err)
+		return err;
 	}
 
 	err = recordsets.Delete(c.client, allZones[0].ID, allRRs[0].ID).ExtractErr()
