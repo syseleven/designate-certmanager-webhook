@@ -14,13 +14,13 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/dns/v2/recordsets"
 	"github.com/gophercloud/gophercloud/openstack/dns/v2/zones"
 
-	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	log "github.com/sirupsen/logrus"
+	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	"k8s.io/client-go/rest"
 
-	"github.com/kubernetes-incubator/external-dns/pkg/tlsutils"
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/cmd"
+	"github.com/kubernetes-incubator/external-dns/pkg/tlsutils"
 )
 
 var GroupName = os.Getenv("GROUP_NAME")
@@ -63,7 +63,7 @@ type designateDNSProviderSolver struct {
 // be used by your provider here, you should reference a Kubernetes Secret
 // resource and fetch these credentials using a Kubernetes clientset.
 type designateDNSProviderConfig struct {
-	Email           string `json:"email"`
+	Email string `json:"email"`
 }
 
 // Name is used as the name for this DNS solver when referencing it on the ACME
@@ -92,17 +92,17 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 
 	listOpts := zones.ListOpts{
 		Email: cfg.Email,
-		Name: ch.ResolvedZone,
+		Name:  ch.ResolvedZone,
 	}
 
 	allPages, err := zones.List(c.client, listOpts).AllPages()
 	if err != nil {
-		return err;
+		return err
 	}
 
 	allZones, err := zones.ExtractZones(allPages)
 	if err != nil {
-		return err;
+		return err
 	}
 
 	if len(allZones) != 1 {
@@ -138,17 +138,17 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 
 	listOpts := zones.ListOpts{
 		Email: cfg.Email,
-		Name: ch.ResolvedZone,
+		Name:  ch.ResolvedZone,
 	}
 
 	allPages, err := zones.List(c.client, listOpts).AllPages()
 	if err != nil {
-		return err;
+		return err
 	}
 
 	allZones, err := zones.ExtractZones(allPages)
 	if err != nil {
-		return err;
+		return err
 	}
 
 	if len(allZones) != 1 {
@@ -163,12 +163,12 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 
 	allRecordPages, err := recordsets.ListByZone(c.client, allZones[0].ID, recordListOpts).AllPages()
 	if err != nil {
-		return err;
+		return err
 	}
 
 	allRRs, err := recordsets.ExtractRecordSets(allRecordPages)
 	if err != nil {
-		return err;
+		return err
 	}
 
 	if len(allRRs) != 1 {
@@ -199,7 +199,7 @@ func (c *designateDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, s
 	if err != nil {
 		return err
 	}
-	
+
 	c.client = cl
 	return nil
 }
@@ -218,7 +218,6 @@ func loadConfig(cfgJSON *extapi.JSON) (designateDNSProviderConfig, error) {
 
 	return cfg, nil
 }
-
 
 // implementation of the designateClientInterface
 type designateClient struct {

@@ -14,7 +14,7 @@ build:
 .PHONY: rendered-manifest.yaml
 rendered-manifest.yaml:
 	helm template \
-	    --name webhook \
-        --set image.repository=$(IMAGE_NAME) \
-        --set image.tag="$(IMAGE_TAG)" \
-        deploy/designate-certmanager-webhook > "$(OUT)/rendered-manifest.yaml"
+		--name webhook \
+		--set image.repository=$(IMAGE_NAME) \
+		--set image.tag="$(IMAGE_TAG)" \
+		deploy/designate-certmanager-webhook > "$(OUT)/rendered-manifest.yaml"

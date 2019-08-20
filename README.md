@@ -11,6 +11,11 @@ All the deployment templates needed to setup this webhook can be generated using
 make rendered-manifest.yaml
 ```
 
+And be applied to the cluster:
+```
+kubectl apply -f _out/rendered-manifest.yaml
+```
+
 # Configuration
 
 To configure your issuer or cluster issuer to use this webhook as a dns01 solver use the following reference issuer template:
@@ -19,18 +24,18 @@ To configure your issuer or cluster issuer to use this webhook as a dns01 solver
 apiVersion: http://certmanager.k8s.io/v1alpha1
 kind: Issuer
 metadata:
- name: example-issuer
+  name: example-issuer
 spec:
- acme:
-   email: user@example.com
-   server: https://acme-staging-v02.api.letsencrypt.org/directory
-   privateKeySecretRef:
-     name: example-issuer-account-key
-   solvers:
-   - dns01:
-       webhook:
-         groupName: example.com
-         solverName: name-of-solver
-         config:
-           Email: user@example.com
+  acme:
+    email: user@example.com
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: example-issuer-account-key
+    solvers:
+    - dns01:
+        webhook:
+          groupName: example.com
+          solverName: name-of-solver
+          config:
+            Email: user@example.com
 ```
