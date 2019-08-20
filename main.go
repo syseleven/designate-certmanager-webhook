@@ -106,7 +106,7 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 	}
 
 	if len(allZones) != 1 {
-		return fmt.Errorf("Present: Expected to find 1 zone %s, found %i", ch.ResolvedZone, len(allZones))
+		return fmt.Errorf("Present: Expected to find 1 zone %s, found %v", ch.ResolvedZone, len(allZones))
 	}
 
 	var opts recordsets.CreateOpts
@@ -129,7 +129,7 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 // This is in order to facilitate multiple DNS validations for the same domain
 // concurrently.
 func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
-	log.Debugf("CleanUp called ch.ResolvedZone=%s ch.ResolvedFQDN=%s ch.Type=%s", ch.ResolvedZone, ch.ResolvedFQDN)
+	log.Debugf("CleanUp called ch.ResolvedZone=%s ch.ResolvedFQDN=%s", ch.ResolvedZone, ch.ResolvedFQDN)
 
 	cfg, err := loadConfig(ch.Config)
 	if err != nil {
@@ -152,7 +152,7 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 	}
 
 	if len(allZones) != 1 {
-		return fmt.Errorf("CleanUp: Expected to find 1 zone %s, found %i", ch.ResolvedZone, len(allZones))
+		return fmt.Errorf("CleanUp: Expected to find 1 zone %s, found %v", ch.ResolvedZone, len(allZones))
 	}
 
 	recordListOpts := recordsets.ListOpts{
@@ -172,7 +172,7 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 	}
 
 	if len(allRRs) != 1 {
-		return fmt.Errorf("CleanUp: Expected to find 1 recordset matching %s in zone %s, found %i", ch.ResolvedFQDN, ch.ResolvedZone, len(allRRs))
+		return fmt.Errorf("CleanUp: Expected to find 1 recordset matching %s in zone %s, found %v", ch.ResolvedFQDN, ch.ResolvedZone, len(allRRs))
 	}
 
 	// TODO rather than deleting the whole recordset we may have to delete individual records from it, i.e. perform an update rather than a delete
