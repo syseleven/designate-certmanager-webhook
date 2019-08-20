@@ -8,6 +8,8 @@
 # here is recommended.
 groupName: acme.syseleven.de
 
+replicaCount: 1
+
 certManager:
   namespace: cert-manager
   serviceAccountName: cert-manager
