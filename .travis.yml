@@ -1,4 +1,14 @@
 language: go
 
+env:
+  global:
+    secure: spKB9eFTLhogza27TCSyrb77N1x1K63PUq3wBaiY7iS72LznEtuXz9oTV+icxpBE/pMEPS4HcMg2z7obW+07gf+/d5yi1TtrBNlSyD/w94QFFRRHL2vtqqXUMX0MvxQkmeyYRN6Z1AkxkBOiinw0tpfjP5PizoSBAnnOmx1lQ/Y5nR4B+84pmd+h/o/3AW7t9NSLbrPG6Ikx6skENSh6Sq23voB8xxoRrlL1QtkTMDEu7icQnwS+P8fezFIco+fPxS+04VlQGfPpZfPirwhhQnp9M+cRZOmiSjzgvxn3jQDoUWIzBwpVFbiLg0js0DdcpIlzYvgSvnWC3qwmFf+T7sKmZk8w++WpFNWuCLDqj5MSo+MTYu6o81mQvrnyuSyxdJyb7HU4pQK/TCq/M36DzH9EwKJ2umNK7Ko3AYp5wVYEW0GDHqgN9YQa1bo7kPe0KEkzgpdEuYQRKz5gE1FxFHoOV+uVsVyVqAypOUrxv43P5TsuYlzc+sg+sXz1hEioCowaYcoWIUM4j2ScNBzlELt/RgWbqYJh060v7Ahgnie9gI/WYhTZJ0DO6JTpLj+vucOsOs9OP7RtXZcAdpns4qNKQr5Wpi//j4+vx3dJCfUTwvppbc9LwzpMcTgZTmAlT8avcQ9zbJwkwXYrRqTMNEldVdiLvTozi8IAuIkN3uc=
+
 go:
   - 1.12.x
+
+deploy:
+  provider: script
+  script: make ci-push
+  on:
+    tags: true
