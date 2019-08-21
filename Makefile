@@ -5,11 +5,11 @@ OUT := $(shell pwd)/_out
 
 $(shell mkdir -p "$(OUT)")
 
-verify:
-	go test -v .
-
 build:
 	docker build -t "$(IMAGE_NAME):$(IMAGE_TAG)" .
+
+verify:
+	go test -v .
 
 .PHONY: helm-install
 helm-install:
