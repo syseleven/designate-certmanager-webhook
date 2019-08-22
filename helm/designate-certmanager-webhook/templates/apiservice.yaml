@@ -1,7 +1,7 @@
 apiVersion: apiregistration.k8s.io/v1beta1
 kind: APIService
 metadata:
-  name: v1alpha1.{{ .Values.groupName }}
+  name: v1alpha1.acme.syseleven.de
   labels:
     app: {{ include "designate-certmanager-webhook.name" . }}
     chart: {{ include "designate-certmanager-webhook.chart" . }}
@@ -10,7 +10,7 @@ metadata:
   annotations:
     certmanager.k8s.io/inject-ca-from: "{{ .Release.Namespace }}/{{ include "designate-certmanager-webhook.servingCertificate" . }}"
 spec:
-  group: {{ .Values.groupName }}
+  group: acme.syseleven.de
   groupPriorityMinimum: 1000
   versionPriority: 15
   service:

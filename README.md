@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/syseleven/designate-certmanager-webhook.svg?branch=master)](https://travis-ci.org/syseleven/designate-certmanager-webhook)
 
-This ACME webhook implementation for cert-manager works with OpenStack designate to generate certificates using DNS-01 challenge.
+This ACME webhook implementation for [cert-manager](http://docs.cert-manager.io) works with OpenStack designate to generate certificates using DNS-01 challenge.
 
 # Deployment
 This webhook is deployed as a separate deployment and registered with kubernetes apiserver as and apiservice. For more details on how

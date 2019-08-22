@@ -64,7 +64,7 @@ metadata:
     heritage: {{ .Release.Service }}
 rules:
   - apiGroups:
-      - {{ .Values.groupName }}
+      - acme.syseleven.de
     resources:
       - '*'
     verbs:

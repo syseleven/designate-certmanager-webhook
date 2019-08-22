@@ -1,0 +1,33 @@
+replicaCount: 1
+
+certManager:
+  namespace: cert-manager
+  serviceAccountName: cert-manager
+
+image:
+  repository: syseleven/designate-certmanager-webhook
+  tag: latest
+  pullPolicy: IfNotPresent
+
+credentialsSecret: cloud-credentials
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 443
+
+resources: {}
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
