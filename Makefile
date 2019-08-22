@@ -20,6 +20,7 @@ test:
 		 -e OS_USERNAME=$$OS_USERNAME \
 		 -e OS_PASSWORD=$$OS_PASSWORD \
 		 -e OS_AUTH_URL=$$OS_AUTH_URL \
+		 -e OS_REGION_NAME=$$OS_REGION_NAME \
 	     $(IMAGE_NAME)-test go test -v .
 
 ci-push:
