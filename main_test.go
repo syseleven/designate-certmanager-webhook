@@ -19,6 +19,7 @@ func TestRunsSuite(t *testing.T) {
 	fixture := dns.NewFixture(&designateDNSProviderSolver{},
 		dns.SetResolvedZone(zone),
 		dns.SetAllowAmbientCredentials(false),
+		dns.SetBinariesPath("/binpath"),
 		dns.SetManifestPath("testdata/my-custom-solver"),
 	)
 
