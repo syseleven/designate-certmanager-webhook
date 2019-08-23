@@ -26,9 +26,7 @@ import (
 var GroupName = os.Getenv("GROUP_NAME")
 
 func main() {
-	if GroupName == "" {
-		panic("GROUP_NAME must be specified")
-	}
+	GroupName == "acme.designatedns"
 
 	// This will register our custom DNS provider with the webhook serving
 	// library, making it available as an API under the provided GroupName.

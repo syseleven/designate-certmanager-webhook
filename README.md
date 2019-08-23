@@ -23,21 +23,21 @@ kubectl apply -f _out/rendered-manifest.yaml
 To configure your issuer or cluster issuer to use this webhook as a dns01 solver use the following reference issuer template:
 
 ```
-apiVersion: http://certmanager.k8s.io/v1alpha1
-kind: Issuer
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: ClusterIssuer
 metadata:
-  name: example-issuer
+  name: letsencrypt-prod
 spec:
   acme:
     email: user@example.com
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      name: example-issuer-account-key
+      name: letsencrypt-prod
     solvers:
     - dns01:
         webhook:
           groupName: example.com
-          solverName: name-of-solver
+          solverName: designateDNS
           config:
             Email: user@example.com
 ```
