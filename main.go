@@ -73,7 +73,7 @@ type designateDNSProviderConfig struct {
 // within a single webhook deployment**.
 // For example, `cloudflare` may be used as the name of a solver.
 func (c *designateDNSProviderSolver) Name() string {
-	log.Debugf("Name() called")
+	log.Infof("Name() called")
 	return "designateDNS"
 }
 
@@ -83,7 +83,7 @@ func (c *designateDNSProviderSolver) Name() string {
 // cert-manager itself will later perform a self check to ensure that the
 // solver has correctly configured the DNS provider.
 func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
-	log.Debugf("Present() called ch.DNSName=%s ch.ResolvedZone=%s ch.ResolvedFQDN=%s ch.Type=%s", ch.DNSName, ch.ResolvedZone, ch.ResolvedFQDN, ch.Type)
+	log.Infof("Present() called ch.DNSName=%s ch.ResolvedZone=%s ch.ResolvedFQDN=%s ch.Type=%s", ch.DNSName, ch.ResolvedZone, ch.ResolvedFQDN, ch.Type)
 
 	cfg, err := loadConfig(ch.Config)
 	if err != nil {
@@ -129,7 +129,7 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 // This is in order to facilitate multiple DNS validations for the same domain
 // concurrently.
 func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
-	log.Debugf("CleanUp called ch.ResolvedZone=%s ch.ResolvedFQDN=%s", ch.ResolvedZone, ch.ResolvedFQDN)
+	log.Infof("CleanUp called ch.ResolvedZone=%s ch.ResolvedFQDN=%s", ch.ResolvedZone, ch.ResolvedFQDN)
 
 	cfg, err := loadConfig(ch.Config)
 	if err != nil {
