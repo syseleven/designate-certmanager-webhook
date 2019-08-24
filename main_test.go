@@ -8,7 +8,8 @@ import (
 )
 
 var (
-	zone = os.Getenv("TEST_ZONE_NAME")
+	zone    = os.Getenv("TEST_ZONE_NAME")
+	binpath = os.Getenv("TEST_BINPATH")
 )
 
 func TestRunsSuite(t *testing.T) {
@@ -19,7 +20,7 @@ func TestRunsSuite(t *testing.T) {
 	fixture := dns.NewFixture(&designateDNSProviderSolver{},
 		dns.SetResolvedZone(zone),
 		dns.SetAllowAmbientCredentials(false),
-		dns.SetBinariesPath("/binpath"),
+		dns.SetBinariesPath(binpath),
 		dns.SetManifestPath("testdata/my-custom-solver"),
 	)
 
