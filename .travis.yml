@@ -15,8 +15,12 @@ env:
 go:
   - 1.12.x
 
+before_script: make check
+script: make test
+
 deploy:
   provider: script
+  before_script: make build
   script: make ci-push
   on:
     tags: true

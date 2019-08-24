@@ -1,7 +1,7 @@
 IMAGE_NAME := "syseleven/designate-certmanager-webhook"
 IMAGE_TAG  ?= $(shell git describe --tags --always --dirty)
 
-build: check test
+build:
 	docker build -t "$(IMAGE_NAME):$(IMAGE_TAG)" .
 
 check:
