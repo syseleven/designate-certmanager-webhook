@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/jetstack/cert-manager/test/acme/dns"
 )
@@ -22,6 +23,7 @@ func TestRunsSuite(t *testing.T) {
 		dns.SetAllowAmbientCredentials(false),
 		dns.SetBinariesPath(binpath),
 		dns.SetManifestPath("testdata/my-custom-solver"),
+		dns.SetPropagationLimit(time.Minute*10),
 	)
 
 	fixture.RunConformance(t)

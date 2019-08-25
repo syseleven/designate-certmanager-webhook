@@ -15,3 +15,5 @@ require (
 replace k8s.io/client-go => k8s.io/client-go v0.0.0-20190413052642-108c485f896e
 
 replace github.com/evanphx/json-patch => github.com/evanphx/json-patch v0.0.0-20190203023257-5858425f7550
+
+replace github.com/jetstack/cert-manager => github.com/multi-io/cert-manager v0.9.1-test-propagationlimit-configurable
