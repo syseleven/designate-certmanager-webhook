@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -15,7 +14,6 @@ import (
 	"github.com/gophercloud/gophercloud/openstack/dns/v2/zones"
 
 	log "github.com/sirupsen/logrus"
-	extapi "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	"k8s.io/client-go/rest"
 
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
@@ -48,24 +46,6 @@ type designateDNSProviderSolver struct {
 	client *gophercloud.ServiceClient
 }
 
-// customDNSProviderConfig is a structure that is used to decode into when
-// solving a DNS01 challenge.
-// This information is provided by cert-manager, and may be a reference to
-// additional configuration that's needed to solve the challenge for this
-// particular certificate or issuer.
-// This typically includes references to Secret resources containing DNS
-// provider credentials, in cases where a 'multi-tenant' DNS solver is being
-// created.
-// If you do *not* require per-issuer or per-certificate configuration to be
-// provided to your webhook, you can skip decoding altogether in favour of
-// using CLI flags or similar to provide configuration.
-// You should not include sensitive information here. If credentials need to
-// be used by your provider here, you should reference a Kubernetes Secret
-// resource and fetch these credentials using a Kubernetes clientset.
-type designateDNSProviderConfig struct {
-	Email string `json:"email"`
-}
-
 // Name is used as the name for this DNS solver when referencing it on the ACME
 // Issuer resource.
 // This should be unique **within the group name**, i.e. you can have two
@@ -85,14 +65,8 @@ func (c *designateDNSProviderSolver) Name() string {
 func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
 	log.Infof("Present() called ch.DNSName=%s ch.ResolvedZone=%s ch.ResolvedFQDN=%s ch.Type=%s", ch.DNSName, ch.ResolvedZone, ch.ResolvedFQDN, ch.Type)
 
-	cfg, err := loadConfig(ch.Config)
-	if err != nil {
-		return err
-	}
-
 	listOpts := zones.ListOpts{
-		Email: cfg.Email,
-		Name:  ch.ResolvedZone,
+		Name: ch.ResolvedZone,
 	}
 
 	allPages, err := zones.List(c.client, listOpts).AllPages()
@@ -131,14 +105,8 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
 	log.Infof("CleanUp called ch.ResolvedZone=%s ch.ResolvedFQDN=%s", ch.ResolvedZone, ch.ResolvedFQDN)
 
-	cfg, err := loadConfig(ch.Config)
-	if err != nil {
-		return err
-	}
-
 	listOpts := zones.ListOpts{
-		Email: cfg.Email,
-		Name:  ch.ResolvedZone,
+		Name: ch.ResolvedZone,
 	}
 
 	allPages, err := zones.List(c.client, listOpts).AllPages()
@@ -202,26 +170,6 @@ func (c *designateDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, s
 
 	c.client = cl
 	return nil
-}
-
-// loadConfig is a small helper function that decodes JSON configuration into
-// the typed config struct.
-func loadConfig(cfgJSON *extapi.JSON) (designateDNSProviderConfig, error) {
-	cfg := designateDNSProviderConfig{}
-	// handle the 'base case' where no configuration has been provided
-	if cfgJSON == nil {
-		return cfg, nil
-	}
-	if err := json.Unmarshal(cfgJSON.Raw, &cfg); err != nil {
-		return cfg, fmt.Errorf("error decoding solver config: %v", err)
-	}
-
-	return cfg, nil
-}
-
-// implementation of the designateClientInterface
-type designateClient struct {
-	serviceClient *gophercloud.ServiceClient
 }
 
 // copies environment variables to new names without overwriting existing values
