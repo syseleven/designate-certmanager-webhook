@@ -21,13 +21,9 @@ import (
 	"github.com/kubernetes-incubator/external-dns/pkg/tlsutils"
 )
 
-var GroupName = os.Getenv("GROUP_NAME")
+const GroupName = "acme.syseleven.de"
 
 func main() {
-	if GroupName == "" {
-		panic("GROUP_NAME must be specified")
-	}
-
 	cmd.RunWebhookServer(GroupName,
 		&designateDNSProviderSolver{},
 	)
