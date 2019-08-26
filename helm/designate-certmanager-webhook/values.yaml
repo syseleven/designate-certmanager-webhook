@@ -6,10 +6,20 @@ certManager:
 
 image:
   repository: syseleven/designate-certmanager-webhook
-  tag: latest
+  tag: 0.2.1
   pullPolicy: IfNotPresent
 
+# Designate secret name
 credentialsSecret: cloud-credentials
+
+openstack:
+  # Openstack credentials and cloud settings
+  username:
+  password:
+  project_id:
+  region_name:
+  auth_url:
+  domain_name:
 
 nameOverride: ""
 fullnameOverride: ""
