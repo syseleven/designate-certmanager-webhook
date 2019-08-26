@@ -22,7 +22,7 @@ kubectl -n cert-manager create secret generic cloud-credentials \
 --from-literal=OS_DOMAIN_NAME=Default
 ```
 
-For now, we do not host a chart repository. To use the charts, you must download this repository and unpack it into a directory. Edit the values.yaml file and add you Openstack setting. Then you can install the helm chart with this command:
+For now, we do not host a chart repository. To use the charts, you must download this repository and unpack it into a directory. Edit the values.yaml file and add your Openstack settings. Then you can install the helm chart with this command:
 
 ```
 helm install --name designate-certmanager --namespace=cert-manager designate-certmanager-webhook
