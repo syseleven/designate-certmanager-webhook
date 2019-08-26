@@ -34,12 +34,12 @@ type designateDNSProviderSolver struct {
 }
 
 func (c *designateDNSProviderSolver) Name() string {
-	log.Infof("Name() called")
+	log.Debugf("Name() called")
 	return "designateDNS"
 }
 
 func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
-	log.Infof("Present() called ch.DNSName=%s ch.ResolvedZone=%s ch.ResolvedFQDN=%s ch.Type=%s", ch.DNSName, ch.ResolvedZone, ch.ResolvedFQDN, ch.Type)
+	log.Debugf("Present() called ch.DNSName=%s ch.ResolvedZone=%s ch.ResolvedFQDN=%s ch.Type=%s", ch.DNSName, ch.ResolvedZone, ch.ResolvedFQDN, ch.Type)
 
 	listOpts := zones.ListOpts{
 		Name: ch.ResolvedZone,
@@ -73,7 +73,7 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 }
 
 func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error {
-	log.Infof("CleanUp called ch.ResolvedZone=%s ch.ResolvedFQDN=%s", ch.ResolvedZone, ch.ResolvedFQDN)
+	log.Debugf("CleanUp called ch.ResolvedZone=%s ch.ResolvedFQDN=%s", ch.ResolvedZone, ch.ResolvedFQDN)
 
 	listOpts := zones.ListOpts{
 		Name: ch.ResolvedZone,
