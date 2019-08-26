@@ -10,10 +10,10 @@ image:
   pullPolicy: IfNotPresent
 
 # Designate secret name
-credentialsSecret: cloud-credentials
+# credentialsSecret: cloud-credentials
 
 openstack:
-  # Openstack credentials and cloud settings
+  # Openstack credentials and cloud settings. You must fill in all blank fields.
   username:
   password:
   project_id:
