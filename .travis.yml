@@ -20,7 +20,6 @@ script: make test
 
 deploy:
   provider: script
-  before_script: make build
-  script: make ci-push
+  script: make build ci-push
   on:
     tags: true
