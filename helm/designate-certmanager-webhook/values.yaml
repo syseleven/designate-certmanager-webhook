@@ -6,14 +6,17 @@ certManager:
 
 image:
   repository: syseleven/designate-certmanager-webhook
-  tag: 0.2.1
+  tag: 0.2.2
   pullPolicy: IfNotPresent
 
-# Designate secret name. If you fill in the openstack settings below the chart will create and fill your secret. If not please consult the README for instructions on how to create your own secret.
-# credentialsSecret: cloud-credentials
+# This secret holds the authenitcation information for designate
+credentialsSecret: cloud-credentials
 
+# If you fill out these information the helm chart will use your provided
+# information and overwrite an existing ${credentialsSecret} secret. If the values
+# are kept empty, you must create a secret with desired values manually. Please
+# refer to the README for more information.
 openstack:
-  # Openstack credentials and cloud settings. You must fill in all blank fields or create you own secret.
   username: ""
   password: ""
   project_id: ""
@@ -30,11 +33,11 @@ service:
 
 resources: {}
   # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
+  #   cpu: 100m
+  #   memory: 128Mi
   # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+  #   cpu: 100m
+  #   memory: 128Mi
 
 nodeSelector: {}
 

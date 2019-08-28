@@ -6,23 +6,23 @@ This is an ACME webhook implementation for the [cert-manager](http://docs.cert-m
 
 # Prerequisites
 
-To use the charts here, [Helm](https://helm.sh/) must be installed in your Kubernetes cluster. Setting up Kubernetes and Helm and is outside the scope of this README. Please refer to the Kubernetes and Helm documentation. You will also need the [cert-manager](https://github.com/jetstack/cert-manager) from Jetstack and a working Ingress controller. Please refer to the cert-manager [documentation](https://docs.cert-manager.io) for full technical documentation for the project. For the Ingress controller please refer to the stable [Nginx Ingress helm chart](https://github.com/helm/charts/tree/master/stable/nginx-ingress)  
+To use this chart [Helm](https://helm.sh/) must be installed in your Kubernetes cluster. Setting up Kubernetes and Helm and is outside the scope of this README. Please refer to the Kubernetes and Helm documentation. You will also need the [cert-manager](https://github.com/jetstack/cert-manager) from Jetstack. Please refer to the cert-manager [documentation](https://docs.cert-manager.io) for full technical documentation for the project. This README assumes, the cert-manager is installed in the namespace `cert-manager`. Adapt examples accordingly, if you have installed it in a different namespace.
 
 # Deployment
 
-Optional you only need to do this if you do not add your Openstack settings to the provided values.yaml file. Create a kubernetes secret in the cert-manager namespace. With your Openstack credentials and the project ID with the dns zone you would like to use:
+***Optional*** You can choose to pre-create your authentication secret or configure the values via helm. If you don't want to configure your credentials via helm, create a kubernetes secret in the cert-manager namespace containing your OpenStack credentials and the project ID with the DNS zone you would like to use:
 
 ```
-kubectl -n cert-manager create secret generic cloud-credentials \
---from-literal=OS_PROJECT_ID=OPENSTACK-PROJECTID \
---from-literal=OS_REGION_NAME=OPENSTACK-REGION \
---from-literal=OS_PASSWORD=OPENSTACK-PASSWORD \
---from-literal=OS_AUTH_URL=OPENSTACK-AUTH-URL \
---from-literal=OS_USERNAME=OPENSTACK-USERNAME \
---from-literal=OS_DOMAIN_NAME=Default
+kubectl --namespace cert-manager create secret generic cloud-credentials \
+  --from-literal=OS_AUTH_URL=<OpenStack Authentication URL> \
+  --from-literal=OS_DOMAIN_NAME=<OpenStack Domain> \
+  --from-literal=OS_REGION_NAME=<OpenStack Region> \
+  --from-literal=OS_PROJECT_ID=<OpenStack Project ID> \
+  --from-literal=OS_USERNAME=<OpenStack Username> \
+  --from-literal=OS_PASSWORD=<OpenStack Password>
 ```
 
-For now, we do not host a chart repository. To use the charts, you must download this repository and unpack it into a directory. Edit the values.yaml file and add your Openstack settings. Then you can install the helm chart with this command:
+For now, we do not host a chart repository. To use this chart, you must clone this repository. Edit the values.yaml file and add your OpenStack settings if you did not create the secret before. Then you can install the helm chart with the command:
 
 ```
 helm install --name designate-certmanager --namespace=cert-manager designate-certmanager-webhook
@@ -30,7 +30,7 @@ helm install --name designate-certmanager --namespace=cert-manager designate-cer
 
 # Configuration
 
-To configure your Issuer or ClusterIssuer to use this webhook as a dns01 solver use the following reference for a ClusterIssuer template. To use this in production please remove the reference to the Letsencrypt staging api:
+To configure your Issuer or ClusterIssuer to use this webhook as a DNS-01 solver use the following reference for a ClusterIssuer template. To use this in production please replace the reference to the Letsencrypt staging api accordingly:
 
 ```
 apiVersion: certmanager.k8s.io/v1alpha1
@@ -55,7 +55,7 @@ spec:
           solverName: designatedns
 ```
 
-You are now ready to create you first certificate resource. The easiest way to accomplish this is to add an annotation to an Ingress rule. Please adapt this example for you own needs: 
+You are now ready to create you first certificate resource. The easiest way to accomplish this is to add an annotation to an Ingress rule. Please adapt this example for your own needs:
 
 ```
 apiVersion: networking.k8s.io/v1beta1
@@ -70,7 +70,7 @@ spec:
   - hosts:
     - my ingress.com
     # cert-manager will store the created certificate in this secret.
-    secretName: myingress-cert 
+    secretName: myingress-cert
   rules:
   - host: my ingress.com
     http:
@@ -79,4 +79,4 @@ spec:
         backend:
           serviceName: myservice
           servicePort: http
-``` 
+```
