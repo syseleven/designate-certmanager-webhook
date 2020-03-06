@@ -69,6 +69,12 @@ rules:
       - '*'
     verbs:
       - 'create'
+  - apiGroups:
+      - apiregistration.k8s.io
+    resources:
+      - apiservice
+    verbs:
+      - '*'
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding

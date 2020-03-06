@@ -20,6 +20,32 @@ spec:
         release: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ include "designate-certmanager-webhook.fullname" . }}
+      initContainers:
+        - name: wait-for-tls-secret
+          image: alpine:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+          - name: certs
+            mountPath: /tls
+            readOnly: true
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - "while [ ! -f /certs/tls.key ]; do sleep 5; done"
+        - name: add-apiservice
+          image: bitnami/kubectl:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: apiservice-config
+              mountPath: /config
+              readOnly: true
+          command:
+            - kubectl
+          args:
+            - apply
+            - -f
+            - /config/apiservice.yaml
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -51,8 +77,12 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
       volumes:
+        - name: apiservice-config
+          configMap:
+            name: {{ include "designate-certmanager-webhook.fullname" . }}-apiservice
         - name: certs
           secret:
+            optional: true
             secretName: {{ include "designate-certmanager-webhook.servingCertificate" . }}
     {{- with .Values.nodeSelector }}
       nodeSelector:

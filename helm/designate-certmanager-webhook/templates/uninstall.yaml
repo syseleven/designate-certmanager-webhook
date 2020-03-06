@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: uninstall-{{ include "designate-certmanager-webhook.fullname" . }}
+  labels:
+    app: {{ include "designate-certmanager-webhook.name" . }}
+    chart: {{ include "designate-certmanager-webhook.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ include "designate-certmanager-webhook.fullname" . }}
+      containers:
+        - name: remove-apiservice
+          image: bitnami/kubectl:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - kubectl
+          args:
+            - delete
+            - apiservice
+            - {{ include "designate-certmanager-webhook.fullname" . }}-apiservice

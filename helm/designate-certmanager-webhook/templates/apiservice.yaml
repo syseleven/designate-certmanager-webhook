@@ -1,19 +1,30 @@
-apiVersion: apiregistration.k8s.io/v1beta1
-kind: APIService
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: v1alpha1.acme.syseleven.de
+  name: {{ include "designate-certmanager-webhook.fullname" . }}-apiservice
   labels:
     app: {{ include "designate-certmanager-webhook.name" . }}
     chart: {{ include "designate-certmanager-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    certmanager.k8s.io/inject-ca-from: "{{ .Release.Namespace }}/{{ include "designate-certmanager-webhook.servingCertificate" . }}"
-spec:
-  group: acme.syseleven.de
-  groupPriorityMinimum: 1000
-  versionPriority: 15
-  service:
-    name: {{ include "designate-certmanager-webhook.fullname" . }}
-    namespace: {{ .Release.Namespace }}
-  version: v1alpha1
+data:
+  apiservice.yaml: |
+    apiVersion: apiregistration.k8s.io/v1beta1
+    kind: APIService
+    metadata:
+      name: v1alpha1.acme.syseleven.de
+      labels:
+        app: {{ include "designate-certmanager-webhook.name" . }}
+        chart: {{ include "designate-certmanager-webhook.chart" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+      annotations:
+        certmanager.k8s.io/inject-ca-from: "{{ .Release.Namespace }}/{{ include "designate-certmanager-webhook.servingCertificate" . }}"
+    spec:
+      group: acme.syseleven.de
+      groupPriorityMinimum: 1000
+      versionPriority: 15
+      service:
+        name: {{ include "designate-certmanager-webhook.fullname" . }}
+        namespace: {{ .Release.Namespace }}
+      version: v1alpha1
