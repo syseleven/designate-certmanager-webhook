@@ -25,4 +25,4 @@ spec:
           args:
             - delete
             - apiservice
-            - {{ include "designate-certmanager-webhook.fullname" . }}-apiservice
+            - v1alpha1.acme.syseleven.de
