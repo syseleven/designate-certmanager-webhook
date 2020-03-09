@@ -32,7 +32,7 @@ spec:
             - /bin/sh
           args:
             - -c
-            - "while [ ! -f /certs/tls.key ]; do sleep 5; done"
+            - "while [ ! -f /tls/tls.key ]; do sleep 5; done"
         - name: add-apiservice
           image: bitnami/kubectl:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
