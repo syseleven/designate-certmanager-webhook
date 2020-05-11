@@ -24,5 +24,6 @@ spec:
             - kubectl
           args:
             - delete
+            - --ignore-not-found
             - apiservice
             - v1alpha1.acme.syseleven.de
