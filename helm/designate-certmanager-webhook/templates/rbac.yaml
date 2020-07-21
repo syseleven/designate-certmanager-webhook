@@ -7,9 +7,6 @@ metadata:
     chart: {{ include "designate-certmanager-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    "helm.sh/hook": pre-delete
-    "helm.sh/hook-delete-policy": hook-succeeded
 ---
 # Grant the webhook permission to read the ConfigMap containing the Kubernetes
 # apiserver's requestheader-ca-certificate.
@@ -24,9 +21,6 @@ metadata:
     chart: {{ include "designate-certmanager-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    annotations:
-      "helm.sh/hook": pre-delete
-      "helm.sh/hook-delete-policy": hook-succeeded
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -48,9 +42,6 @@ metadata:
     chart: {{ include "designate-certmanager-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    "helm.sh/hook": pre-delete
-    "helm.sh/hook-delete-policy": hook-succeeded
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -60,6 +51,30 @@ subjects:
     kind: ServiceAccount
     name: {{ include "designate-certmanager-webhook.fullname" . }}
     namespace: {{ .Release.Namespace }}
+---
+# Grant cert-manager permission to validate using our apiserver
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "designate-certmanager-webhook.fullname" . }}:domain-solver
+  labels:
+    app: {{ include "designate-certmanager-webhook.name" . }}
+    chart: {{ include "designate-certmanager-webhook.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+  - apiGroups:
+      - acme.syseleven.de
+    resources:
+      - '*'
+    verbs:
+      - 'create'
+  - apiGroups:
+      - apiregistration.k8s.io
+    resources:
+      - apiservices
+    verbs:
+      - '*'
 ---
 # Grant cert-manager permission to validate using our apiserver
 apiVersion: rbac.authorization.k8s.io/v1
@@ -97,6 +112,9 @@ metadata:
     chart: {{ include "designate-certmanager-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-delete-policy": hook-succeeded
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -124,4 +142,7 @@ metadata:
     chart: {{ include "designate-certmanager-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-delete-policy": hook-succeeded
   namespace: default
