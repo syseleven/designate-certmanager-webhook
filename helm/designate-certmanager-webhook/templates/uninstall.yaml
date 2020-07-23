@@ -27,3 +27,61 @@ spec:
             - --ignore-not-found
             - apiservice
             - v1alpha1.acme.syseleven.de
+---
+# Grant cert-manager permission to validate using our apiserver
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "designate-certmanager-webhook.fullname" . }}:uninstall
+  labels:
+    app: {{ include "designate-certmanager-webhook.name" . }}
+    chart: {{ include "designate-certmanager-webhook.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-delete-policy": hook-succeeded
+rules:
+  - apiGroups:
+      - 'batch'
+      - 'extensions'
+    resources:
+      - 'jobs'
+    verbs:
+      - 'create'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "designate-certmanager-webhook.fullname" . }}:uninstall
+  labels:
+    app: {{ include "designate-certmanager-webhook.name" . }}
+    chart: {{ include "designate-certmanager-webhook.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-delete-policy": hook-succeeded
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "designate-certmanager-webhook.fullname" . }}:uninstall
+subjects:
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: {{ include "designate-certmanager-webhook.fullname" . }}
+    namespace: default
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "designate-certmanager-webhook.fullname" . }}
+  labels:
+    app: {{ include "designate-certmanager-webhook.name" . }}
+    chart: {{ include "designate-certmanager-webhook.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-delete-policy": hook-succeeded
+  namespace: default
