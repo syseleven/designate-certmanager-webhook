@@ -62,8 +62,6 @@ metadata:
     chart: {{ include "designate-certmanager-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    "helm.sh/hook": pre-delete
 rules:
   - apiGroups:
       - acme.syseleven.de
@@ -87,8 +85,6 @@ metadata:
     chart: {{ include "designate-certmanager-webhook.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    "helm.sh/hook": pre-delete
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -102,20 +98,3 @@ subjects:
     kind: ServiceAccount
     name: {{ include "designate-certmanager-webhook.fullname" . }}
     namespace: {{ .Release.Namespace }}
-  - apiGroup: ""
-    kind: ServiceAccount
-    name: {{ include "designate-certmanager-webhook.fullname" . }}
-    namespace: default
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: {{ include "designate-certmanager-webhook.fullname" . }}
-  labels:
-    app: {{ include "designate-certmanager-webhook.name" . }}
-    chart: {{ include "designate-certmanager-webhook.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-  annotations:
-    "helm.sh/hook": pre-delete
-  namespace: default
