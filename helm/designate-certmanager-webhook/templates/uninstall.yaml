@@ -43,12 +43,17 @@ metadata:
     "helm.sh/hook-delete-policy": hook-succeeded
 rules:
   - apiGroups:
-      - 'batch'
-      - 'extensions'
+      - acme.syseleven.de
     resources:
-      - 'jobs'
+      - '*'
     verbs:
       - 'create'
+  - apiGroups:
+      - apiregistration.k8s.io
+    resources:
+      - apiservices
+    verbs:
+      - '*'
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
