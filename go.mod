@@ -7,7 +7,7 @@ require (
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/jetstack/cert-manager v0.9.1
 	github.com/kubernetes-incubator/external-dns v0.5.15
-	github.com/sirupsen/logrus v1.2.0
+	github.com/sirupsen/logrus v1.6.0
 	k8s.io/client-go v11.0.1-0.20190409021438-1a26190bd76a+incompatible
 )
 
