@@ -13,6 +13,6 @@ require (
 
 replace k8s.io/client-go => k8s.io/client-go v0.0.0-20190413052642-108c485f896e
 
-replace github.com/evanphx/json-patch => github.com/evanphx/json-patch v0.0.0-20190203023257-5858425f7550
+replace github.com/evanphx/json-patch/v5 => /v5github.com/evanphx/json-patch v5.1.0
 
 replace git.apache.org/thrift.git => github.com/apache/thrift v0.13.0
