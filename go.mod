@@ -8,10 +8,10 @@ require (
 	github.com/jetstack/cert-manager v0.9.1
 	github.com/kubernetes-incubator/external-dns v0.5.15
 	github.com/sirupsen/logrus v1.6.0
-	k8s.io/client-go v11.0.1-0.20190409021438-1a26190bd76a+incompatible
+	k8s.io/client-go/v12 v12.0.0
 )
 
-replace k8s.io/client-go => k8s.io/client-go v0.0.0-20190413052642-108c485f896e
+replace k8s.io/client-go/v12 => /v12k8s.io/client-go v12.0.0
 
 replace github.com/evanphx/json-patch => github.com/evanphx/json-patch v0.0.0-20190203023257-5858425f7550
 
