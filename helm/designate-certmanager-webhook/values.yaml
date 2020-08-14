@@ -6,7 +6,7 @@ certManager:
 
 image:
   repository: syseleven/designate-certmanager-webhook
-  tag: 0.2.4
+  tag: 0.2.9
   pullPolicy: IfNotPresent
 
 # This secret holds the authenitcation information for designate
