@@ -3,7 +3,7 @@ module github.com/syseleven/designate-certmanager-webhook
 go 1.12
 
 require (
-	github.com/gophercloud/gophercloud v0.0.0-20190126172459-c818fa66e4c8
+	github.com/gophercloud/gophercloud v0.12.0
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/jetstack/cert-manager v0.9.1
 	github.com/kubernetes-incubator/external-dns v0.5.15
