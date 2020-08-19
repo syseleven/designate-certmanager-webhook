@@ -1,6 +1,6 @@
 FROM golang:1.15.0-alpine AS build_deps
 
-RUN apk add --no-cache git bzr
+RUN apk add --no-cache git
 
 WORKDIR /workspace
 ENV GO111MODULE=on
