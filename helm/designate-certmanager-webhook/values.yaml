@@ -9,6 +9,8 @@ image:
   tag: 0.2.4
   pullPolicy: IfNotPresent
 
+imagePullSecrets: []
+
 # This secret holds the authenitcation information for designate
 credentialsSecret: cloud-credentials
 
