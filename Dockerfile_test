@@ -1,4 +1,4 @@
-FROM golang:1.12.9
+FROM golang:1.15.2
 
 RUN apt-get update && apt-get install -y git bzr ca-certificates curl gcc
 
