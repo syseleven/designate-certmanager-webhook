@@ -1,6 +1,6 @@
 module github.com/syseleven/designate-certmanager-webhook
 
-go 1.12
+go 1.15
 
 require (
 	github.com/gophercloud/gophercloud v0.12.0
