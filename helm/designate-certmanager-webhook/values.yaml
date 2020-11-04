@@ -22,6 +22,7 @@ openstack:
   username: ""
   password: ""
   project_id: ""
+  project_name: "" # Use project_id OR project_name
   region_name: ""
   auth_url: ""
   domain_name: ""
