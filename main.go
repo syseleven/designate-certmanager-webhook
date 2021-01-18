@@ -5,6 +5,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -61,8 +62,12 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 
 	var opts recordsets.CreateOpts
 	opts.Name = ch.ResolvedFQDN
-	opts.Records = []string{ch.Key}
 	opts.Type = "TXT"
+	if strings.HasPrefix(ch.Key, "\"") {
+		opts.Records = []string{ch.Key}
+	} else {
+		opts.Records = []string{strconv.Quote(ch.Key)}
+	}
 
 	_, err = recordsets.Create(c.client, allZones[0].ID, opts).Extract()
 	if err != nil {
