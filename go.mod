@@ -6,7 +6,7 @@ require (
 	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
 	github.com/golang/groupcache v0.0.0-20191227052852-215e87163ea7 // indirect
 	github.com/google/go-cmp v0.3.1 // indirect
-	github.com/gophercloud/gophercloud v0.14.0
+	github.com/gophercloud/gophercloud v0.15.0
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/jetstack/cert-manager v0.16.1
 	github.com/kubernetes-incubator/external-dns v0.5.12
