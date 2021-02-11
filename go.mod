@@ -19,4 +19,4 @@ require (
 	k8s.io/utils v0.0.0-20200729134348-d5654de09c73 // indirect
 )
 
-replace git.apache.org/thrift.git => github.com/apache/thrift v0.13.0
+replace git.apache.org/thrift.git => github.com/apache/thrift v0.14.0
