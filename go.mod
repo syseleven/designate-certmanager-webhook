@@ -8,7 +8,7 @@ require (
 	github.com/google/go-cmp v0.3.1 // indirect
 	github.com/gophercloud/gophercloud v0.14.0
 	github.com/imdario/mergo v0.3.7 // indirect
-	github.com/jetstack/cert-manager v0.16.1
+	github.com/jetstack/cert-manager v1.2.0
 	github.com/kubernetes-incubator/external-dns v0.5.12
 	github.com/sirupsen/logrus v1.7.0
 	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6 // indirect
