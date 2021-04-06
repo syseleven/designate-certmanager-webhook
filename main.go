@@ -63,11 +63,7 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 	var opts recordsets.CreateOpts
 	opts.Name = ch.ResolvedFQDN
 	opts.Type = "TXT"
-	if strings.HasPrefix(ch.Key, "\"") {
-		opts.Records = []string{ch.Key}
-	} else {
-		opts.Records = []string{strconv.Quote(ch.Key)}
-	}
+	opts.Records = []string{quoteRecord(ch.Key)}
 
 	_, err = recordsets.Create(c.client, allZones[0].ID, opts).Extract()
 	if err != nil {
@@ -101,10 +97,11 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 	recordListOpts := recordsets.ListOpts{
 		Name: ch.ResolvedFQDN,
 		Type: "TXT",
-		Data: ch.Key,
+		Data: quoteRecord(ch.Key),
 	}
 
 	allRecordPages, err := recordsets.ListByZone(c.client, allZones[0].ID, recordListOpts).AllPages()
+
 	if err != nil {
 		return err
 	}
@@ -219,4 +216,12 @@ func createDesignateServiceClient() (*gophercloud.ServiceClient, error) {
 	}
 	log.Infof("Found OpenStack Designate service at %s", client.Endpoint)
 	return client, nil
+}
+
+func quoteRecord(r string) string {
+	if strings.HasPrefix(r, "\"") && strings.HasSuffix(r, "\"") {
+		return r
+	} else {
+		return strconv.Quote(r)
+	}
 }
