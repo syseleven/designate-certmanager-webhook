@@ -12,6 +12,7 @@ limitations under the License.
 */
 
 package main
+
 import (
 	"net"
 	"net/http"
@@ -22,9 +23,8 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/kubernetes-incubator/external-dns/pkg/tlsutils"
-
+	log "github.com/sirupsen/logrus"
 )
 
 // copies environment variables to new names without overwriting existing values

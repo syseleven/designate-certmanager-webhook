@@ -18,7 +18,6 @@ import (
 
 const GroupName = "acme.syseleven.de"
 
-
 func main() {
 	cmd.RunWebhookServer(GroupName,
 		&designateDNSProviderSolver{},
