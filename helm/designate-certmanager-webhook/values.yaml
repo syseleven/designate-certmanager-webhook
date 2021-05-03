@@ -1,7 +1,7 @@
 replicaCount: 1
 
 certManager:
-  namespace: cert-manager
+  namespace: ~
   serviceAccountName: cert-manager
 
 image:

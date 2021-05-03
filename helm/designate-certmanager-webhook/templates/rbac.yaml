@@ -93,7 +93,7 @@ subjects:
   - apiGroup: ""
     kind: ServiceAccount
     name: {{ .Values.certManager.serviceAccountName }}
-    namespace: {{ .Values.certManager.namespace }}
+    namespace: {{ .Values.certManager.namespace | default .Release.Namespace }}
   - apiGroup: ""
     kind: ServiceAccount
     name: {{ include "designate-certmanager-webhook.fullname" . }}
