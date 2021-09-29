@@ -1,16 +1,16 @@
 # ACME webhook Implementation for OpenStack Designate
 
-[![Build Status](https://travis-ci.org/syseleven/designate-certmanager-webhook.svg?branch=master)](https://travis-ci.org/syseleven/designate-certmanager-webhook)
+This is an ACME webhook implementation for the [cert-manager](http://docs.cert-manager.io). It works with OpenStack Designate DNSaaS to generate certificates using DNS-01 challenges.
 
-This is an ACME webhook implementation for the [cert-manager](http://docs.cert-manager.io). It works with OpenStack designate to generate certificates using DNS-01 challenges.
-
-# Prerequisites
+## Prerequisites
 
 To use this chart [Helm](https://helm.sh/) must be installed in your Kubernetes cluster. Setting up Kubernetes and Helm and is outside the scope of this README. Please refer to the Kubernetes and Helm documentation. You will also need the [cert-manager](https://github.com/jetstack/cert-manager) from Jetstack. Please refer to the cert-manager [documentation](https://docs.cert-manager.io) for full technical documentation for the project. This README assumes, the cert-manager is installed in the namespace `cert-manager`. Adapt examples accordingly, if you have installed it in a different namespace.
 
-# Deployment
+## Deployment
 
-***Optional*** You can choose to pre-create your authentication secret or configure the values via helm. If you don't want to configure your credentials via helm, create a kubernetes secret in the cert-manager namespace containing your OpenStack credentials and the project ID with the DNS zone you would like to use:
+***Optional*** You can choose to pre-create your authentication secret or configure the values via helm. If you don't want to configure your credentials via helm, create a kubernetes secret in the cert-manager namespace (or where you have deployed cert-manager, with the SysEleven addon it is _syseleven-cert-manager_) containing your OpenStack credentials and the project ID with the DNS zone you would like to use:
+
+### Secret with OpenStack User Credentials
 
 ```
 kubectl --namespace cert-manager create secret generic cloud-credentials \
@@ -22,13 +22,27 @@ kubectl --namespace cert-manager create secret generic cloud-credentials \
   --from-literal=OS_PASSWORD=<OpenStack Password>
 ```
 
+### Secret with OpenStack Application Credentials
+
+```
+kubectl --namespace cert-manager create secret generic cloud-credentials \
+  --from-literal=OS_AUTH_URL=<OpenStack Authentication URL> \
+  --from-literal=OS_DOMAIN_NAME=<OpenStack Domain> \
+  --from-literal=OS_REGION_NAME=<OpenStack Region> \
+  --from-literal=OS_APPLICATION_CREDENTIAL_ID=<OpenStack Application Credential ID> \
+  --from-literal=OS_APPLICATION_CREDENTIAL_NAME=<OpenStack Application Credential name> \
+  --from-literal=OS_APPLICATION_CREDENTIAL_SECRET=<OpenStack Application Credential Secret value>
+```
+
+### Chart deployment
+
 For now, we do not host a chart repository. To use this chart, you must clone this repository. Edit the values.yaml file and add your OpenStack settings if you did not create the secret before. Then you can install the helm chart with the command:
 
 ```
 helm install --name designate-certmanager --namespace=cert-manager designate-certmanager-webhook
 ```
 
-# Configuration
+## Configuration
 
 To configure your Issuer or ClusterIssuer to use this webhook as a DNS-01 solver use the following reference for a ClusterIssuer template. To use this in production please replace the reference to the Letsencrypt staging api accordingly:
 
