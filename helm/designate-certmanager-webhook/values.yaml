@@ -25,10 +25,9 @@ credentialsSecret: cloud-credentials
 # are kept empty, you must create a secret with desired values manually. Please
 # refer to the README for more information.
 openstack:
-  username: ""
-  password: ""
-  project_id: ""
-  project_name: "" # Use project_id OR project_name
+  application_credential_name: ""
+  application_credential_id: ""
+  application_credential_secret: ""
   region_name: ""
   auth_url: ""
   domain_name: ""
