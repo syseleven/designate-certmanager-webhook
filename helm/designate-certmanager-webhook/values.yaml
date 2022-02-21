@@ -23,14 +23,20 @@ credentialsSecret: cloud-credentials
 # If you fill out these information the helm chart will use your provided
 # information and overwrite an existing ${credentialsSecret} secret. If the values
 # are kept empty, you must create a secret with desired values manually. Please
-# refer to the README for more information.
+# refer to the README for more information. You may use either the application credentials.
+# Or the username and password combination to authenticate.
+# The username and password also require a projectid or name. Do not set the projectid if you are using application credentials.
 openstack:
-  application_credential_name: ""
-  application_credential_id: ""
-  application_credential_secret: ""
   region_name: ""
   auth_url: ""
   domain_name: ""
+  application_credential_name: ""
+  application_credential_id: ""
+  application_credential_secret: ""
+#  username: ""
+#  password: ""
+#  project_id: ""
+#  project_name: "" # Use project_id OR project_name
 
 nameOverride: ""
 fullnameOverride: ""
