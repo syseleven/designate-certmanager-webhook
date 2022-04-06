@@ -4,12 +4,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/jetstack/cert-manager/test/acme/dns"
+	"github.com/cert-manager/cert-manager/test/acme/dns"
 )
 
 var (
-	zone    = os.Getenv("TEST_ZONE_NAME")
-	binpath = os.Getenv("TEST_BINPATH")
+	zone = os.Getenv("TEST_ZONE_NAME")
 )
 
 func TestRunsSuite(t *testing.T) {
@@ -20,7 +19,6 @@ func TestRunsSuite(t *testing.T) {
 	fixture := dns.NewFixture(&designateDNSProviderSolver{},
 		dns.SetResolvedZone(zone),
 		dns.SetAllowAmbientCredentials(false),
-		dns.SetBinariesPath(binpath),
 		dns.SetManifestPath("testdata/my-custom-solver"),
 	)
 
