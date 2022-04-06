@@ -12,8 +12,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/rest"
 
-	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
-	"github.com/jetstack/cert-manager/pkg/acme/webhook/cmd"
+	"github.com/cert-manager/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
+	"github.com/cert-manager/cert-manager/pkg/acme/webhook/cmd"
 )
 
 const GroupName = "acme.syseleven.de"
