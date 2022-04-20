@@ -4,7 +4,7 @@ This is an ACME webhook implementation for the [cert-manager](http://docs.cert-m
 
 ## Prerequisites
 
-To use this chart [Helm](https://helm.sh/) must be installed in your Kubernetes cluster. Setting up Kubernetes and Helm and is outside the scope of this README. Please refer to the Kubernetes and Helm documentation. You will also need the [cert-manager](https://github.com/jetstack/cert-manager) from Jetstack. Please refer to the cert-manager [documentation](https://docs.cert-manager.io) for full technical documentation for the project. This README assumes, the cert-manager is installed in the namespace `cert-manager`. Adapt examples accordingly, if you have installed it in a different namespace.
+To use this chart [Helm](https://helm.sh/) must be installed in your Kubernetes cluster. Setting up Kubernetes and Helm and is outside the scope of this README. Please refer to the Kubernetes and Helm documentation. You will also need the [cert-manager](https://github.com/cert-manager/cert-manager). Please refer to the cert-manager [documentation](https://docs.cert-manager.io) for full technical documentation for the project. This README assumes, the cert-manager is installed in the namespace `cert-manager`. Adapt examples accordingly, if you have installed it in a different namespace.
 
 ## Deployment
 
@@ -47,7 +47,7 @@ helm install --name designate-certmanager --namespace=cert-manager designate-cer
 To configure your Issuer or ClusterIssuer to use this webhook as a DNS-01 solver use the following reference for a ClusterIssuer template. To use this in production please replace the reference to the Letsencrypt staging api accordingly:
 
 ```
-apiVersion: certmanager.k8s.io/v1alpha1
+apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-staging
@@ -72,25 +72,27 @@ spec:
 You are now ready to create you first certificate resource. The easiest way to accomplish this is to add an annotation to an Ingress rule. Please adapt this example for your own needs:
 
 ```
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: my Ingress
   annotations:
-    # add an annotation indicating the issuer to use.
-    certmanager.k8s.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+  name: myingress
 spec:
-  tls:
-  - hosts:
-    - my ingress.com
-    # cert-manager will store the created certificate in this secret.
-    secretName: myingress-cert
+  ingressClassName: nginx
   rules:
-  - host: my ingress.com
+  - host: my.ingress.com
     http:
       paths:
-      - path: /
-        backend:
-          serviceName: myservice
-          servicePort: http
+      - backend:
+          service:
+            name: myservice
+            port:
+              number: 1234
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - my.ingress.com
+    secretName: myingress-cert
 ```
