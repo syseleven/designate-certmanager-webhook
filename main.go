@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/cert-manager/cert-manager/pkg/acme/webhook"
 	"strconv"
 	"strings"
 
@@ -26,6 +27,16 @@ func main() {
 
 type designateDNSProviderSolver struct {
 	client *gophercloud.ServiceClient
+}
+
+func New() webhook.Solver {
+	client, err := createDesignateServiceClient()
+	if err != nil {
+		panic(fmt.Errorf("%v", err))
+	}
+	return &designateDNSProviderSolver{
+		client: client,
+	}
 }
 
 func (c *designateDNSProviderSolver) Name() string {
