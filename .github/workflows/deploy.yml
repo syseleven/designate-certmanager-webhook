@@ -4,9 +4,6 @@ on:
   push:
     tags:
       - '*'
-  # test!
-  pull_request:
-    branches: [ master ]
 
 jobs:
   deploy:
