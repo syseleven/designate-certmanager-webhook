@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/cert-manager/cert-manager/pkg/acme/webhook"
 	"strconv"
 	"strings"
 
@@ -13,6 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/rest"
 
+	"github.com/cert-manager/cert-manager/pkg/acme/webhook"
 	"github.com/cert-manager/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/cert-manager/cert-manager/pkg/acme/webhook/cmd"
 )
