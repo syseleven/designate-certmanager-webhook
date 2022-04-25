@@ -12,6 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"k8s.io/client-go/rest"
 
+	"github.com/cert-manager/cert-manager/pkg/acme/webhook"
 	"github.com/cert-manager/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/cert-manager/cert-manager/pkg/acme/webhook/cmd"
 )
@@ -26,6 +27,16 @@ func main() {
 
 type designateDNSProviderSolver struct {
 	client *gophercloud.ServiceClient
+}
+
+func New() webhook.Solver {
+	client, err := createDesignateServiceClient()
+	if err != nil {
+		panic(fmt.Errorf("%v", err))
+	}
+	return &designateDNSProviderSolver{
+		client: client,
+	}
 }
 
 func (c *designateDNSProviderSolver) Name() string {

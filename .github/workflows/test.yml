@@ -1,0 +1,30 @@
+name: Test Worklow
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Run check
+      run: make check
+
+    - name: Run test
+      env:
+        TEST_ZONE_NAME: ${{ secrets.TEST_ZONE_NAME }}
+        OS_TENANT_NAME: ${{ secrets.OS_TENANT_NAME }}
+        OS_TENANT_ID: ${{ secrets.OS_PROJECT_ID }}
+        OS_DOMAIN_NAME: ${{ secrets.OS_DOMAIN_NAME }}
+        OS_USERNAME: ${{ secrets.OS_USERNAME }}
+        OS_PASSWORD: ${{ secrets.OS_PASSWORD }}
+        OS_AUTH_URL: ${{ secrets.OS_AUTH_URL }}
+        OS_REGION_NAME: ${{ secrets.OS_REGION_NAME }}
+        OS_PROJECT_ID: ${{ secrets.OS_PROJECT_ID }}
+      run: make test
