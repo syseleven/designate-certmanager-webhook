@@ -18,7 +18,7 @@ spec:
       serviceAccountName: {{ include "designate-certmanager-webhook.fullname" . }}
       containers:
         - name: remove-apiservice
-          image: bitnami/kubectl:latest
+          image: "{{ .Values.image.kubectl.repository }}:{{ .Values.image.kubectl.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - kubectl
