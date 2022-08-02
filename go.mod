@@ -1,6 +1,6 @@
 module github.com/syseleven/designate-certmanager-webhook
 
-go 1.17
+go 1.19
 
 require (
 	github.com/cert-manager/cert-manager v1.8.0
