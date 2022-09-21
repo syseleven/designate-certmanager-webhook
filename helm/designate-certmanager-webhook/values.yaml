@@ -8,10 +8,13 @@ image:
   repository: syseleven/designate-certmanager-webhook
   tag: 0.2.18
   pullPolicy: IfNotPresent
-  alpine:
+
+alpine:
+  image:
     repository: alpine
     tag: latest
-  kubectl:
+kubectl:
+  image:
     repository: bitnami/kubectl
     tag: latest
 
