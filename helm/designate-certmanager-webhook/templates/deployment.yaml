@@ -26,7 +26,7 @@ spec:
       serviceAccountName: {{ include "designate-certmanager-webhook.fullname" . }}
       initContainers:
         - name: wait-for-tls-secret
-          image: "{{ .Values.image.alpine.repository }}:{{ .Values.image.alpine.tag }}"
+          image: "{{ .Values.alpine.image.repository }}:{{ .Values.alpine.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
           - name: certs
@@ -38,7 +38,7 @@ spec:
             - -c
             - "while [ ! -f /tls/tls.key ]; do sleep 5; done"
         - name: add-apiservice
-          image: "{{ .Values.image.kubectl.repository }}:{{ .Values.image.kubectl.tag }}"
+          image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
             - name: apiservice-config
