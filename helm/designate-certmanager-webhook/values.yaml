@@ -30,6 +30,8 @@ credentialsSecret: cloud-credentials
 openstack:
   username: ""
   password: ""
+  application_credential_id: ""
+  application_credential_secret: ""
   project_id: ""
   project_name: "" # Use project_id OR project_name
   region_name: ""
