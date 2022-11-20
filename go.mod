@@ -7,7 +7,7 @@ require (
 	github.com/gophercloud/gophercloud v0.14.0
 	github.com/kubernetes-incubator/external-dns v0.5.12
 	github.com/sirupsen/logrus v1.8.1
-	k8s.io/client-go v0.23.4
+	k8s.io/client-go/v11 v11.0.0+incompatible
 )
 
 require (
