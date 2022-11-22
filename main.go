@@ -67,7 +67,7 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 	var opts recordsets.CreateOpts
 	opts.Name = ch.ResolvedFQDN
 	opts.Type = "TXT"
-	opts.Records = []string{quoteRecord(ch.Key)}
+	opts.Records = []string{ch.Key}
 
 	_, err = recordsets.Create(c.client, allZones[0].ID, opts).Extract()
 	if err != nil {
@@ -137,12 +137,4 @@ func (c *designateDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, s
 
 	c.client = cl
 	return nil
-}
-
-func quoteRecord(r string) string {
-	if strings.HasPrefix(r, "\"") && strings.HasSuffix(r, "\"") {
-		return r
-	} else {
-		return strconv.Quote(r)
-	}
 }
