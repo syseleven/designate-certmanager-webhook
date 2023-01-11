@@ -101,7 +101,6 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 	recordListOpts := recordsets.ListOpts{
 		Name: ch.ResolvedFQDN,
 		Type: "TXT",
-		Data: quoteRecord(ch.Key),
 	}
 
 	allRecordPages, err := recordsets.ListByZone(c.client, allZones[0].ID, recordListOpts).AllPages()
@@ -138,3 +137,4 @@ func (c *designateDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, s
 	c.client = cl
 	return nil
 }
+
