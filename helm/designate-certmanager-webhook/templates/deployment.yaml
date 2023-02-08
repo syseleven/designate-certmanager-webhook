@@ -57,12 +57,13 @@ spec:
           args:
             - --tls-cert-file=/tls/tls.crt
             - --tls-private-key-file=/tls/tls.key
+            - --secure-port=8443
           envFrom:
             - secretRef:
                 name: {{ .Values.credentialsSecret }}
           ports:
             - name: https
-              containerPort: 443
+              containerPort: 8443
               protocol: TCP
           livenessProbe:
             httpGet:
