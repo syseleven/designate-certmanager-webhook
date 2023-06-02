@@ -23,7 +23,7 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack"
 
-	"github.com/kubernetes-incubator/external-dns/pkg/tlsutils"
+	"sigs.k8s.io/external-dns/pkg/tlsutils"
 	log "github.com/sirupsen/logrus"
 )
 
