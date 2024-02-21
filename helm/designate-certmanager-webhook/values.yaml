@@ -45,6 +45,19 @@ service:
   type: ClusterIP
   port: 443
 
+podSecurityContext:
+  fsGroup: 2000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+securityContext:
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
 resources: {}
   # limits:
   #   cpu: 100m

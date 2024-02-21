@@ -24,6 +24,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "designate-certmanager-webhook.fullname" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: wait-for-tls-secret
           image: "{{ .Values.alpine.image.repository }}:{{ .Values.alpine.image.tag }}"
@@ -37,6 +39,8 @@ spec:
           args:
             - -c
             - "while [ ! -f /tls/tls.key ]; do sleep 5; done"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
         - name: add-apiservice
           image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -50,6 +54,8 @@ spec:
             - apply
             - -f
             - /config/apiservice.yaml
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -80,6 +86,8 @@ spec:
               readOnly: true
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
       volumes:
         - name: apiservice-config
           configMap:
