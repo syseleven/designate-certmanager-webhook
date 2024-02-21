@@ -9,14 +9,20 @@ image:
   tag: 0.2.18
   pullPolicy: IfNotPresent
 
+podSecurityContext: {}
+securityContext: {}
+
 alpine:
   image:
     repository: alpine
     tag: latest
+  securityContext: {}
+
 kubectl:
   image:
     repository: bitnami/kubectl
     tag: latest
+  securityContext: {}
 
 imagePullSecrets: []
 

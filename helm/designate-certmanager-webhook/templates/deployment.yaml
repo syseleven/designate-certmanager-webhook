@@ -23,9 +23,13 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       serviceAccountName: {{ include "designate-certmanager-webhook.fullname" . }}
       initContainers:
         - name: wait-for-tls-secret
+          securityContext:
+            {{- toYaml .Values.alpine.securityContext | nindent 12 }}
           image: "{{ .Values.alpine.image.repository }}:{{ .Values.alpine.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
@@ -38,6 +42,8 @@ spec:
             - -c
             - "while [ ! -f /tls/tls.key ]; do sleep 5; done"
         - name: add-apiservice
+          securityContext:
+            {{- toYaml .Values.kubectl.securityContext | nindent 12 }}
           image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
@@ -53,6 +59,8 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
             - --tls-cert-file=/tls/tls.crt
