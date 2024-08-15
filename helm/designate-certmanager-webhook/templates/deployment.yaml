@@ -85,6 +85,9 @@ spec:
             - name: certs
               mountPath: /tls
               readOnly: true
+            {{- if .Values.extraVolumeMounts }}
+            {{- toYaml .Values.extraVolumeMounts | nindent 12}}
+            {{- end }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           securityContext:
@@ -97,6 +100,9 @@ spec:
           secret:
             optional: true
             secretName: {{ include "designate-certmanager-webhook.servingCertificate" . }}
+        {{- if .Values.extraVolumes }}
+        {{- toYaml .Values.extraVolumes | nindent 8}}
+        {{- end }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
