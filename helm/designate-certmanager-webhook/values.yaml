@@ -37,6 +37,7 @@ openstack:
   region_name: ""
   auth_url: ""
   domain_name: ""
+  ca_cert: ""
 
 nameOverride: ""
 fullnameOverride: ""
