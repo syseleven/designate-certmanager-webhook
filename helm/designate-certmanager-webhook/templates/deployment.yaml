@@ -71,16 +71,7 @@ spec:
             - name: https
               containerPort: 8443
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              scheme: HTTPS
-              path: /healthz
-              port: https
-          readinessProbe:
-            httpGet:
-              scheme: HTTPS
-              path: /healthz
-              port: https
+{{ toYaml .Values.probes | indent 10 }}
           volumeMounts:
             - name: certs
               mountPath: /tls

@@ -71,3 +71,22 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+probes:
+  startupProbe:
+    httpGet:
+      scheme: HTTPS
+      path: /healthz
+      port: https
+  
+  livenessProbe:
+    httpGet:
+      scheme: HTTPS
+      path: /healthz
+      port: https
+
+  readinessProbe:
+    httpGet:
+      scheme: HTTPS
+      path: /healthz
+      port: https
