@@ -3,7 +3,7 @@ module github.com/syseleven/designate-certmanager-webhook
 go 1.17
 
 require (
-	github.com/cert-manager/cert-manager v1.8.0
+	github.com/cert-manager/cert-manager v1.16.2
 	github.com/gophercloud/gophercloud v0.14.0
 	github.com/kubernetes-incubator/external-dns v0.5.12
 	github.com/sirupsen/logrus v1.8.1
