@@ -16,6 +16,8 @@ spec:
     spec:
       restartPolicy: Never
       serviceAccountName: {{ include "designate-certmanager-webhook.fullname" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: remove-apiservice
           image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
@@ -27,6 +29,8 @@ spec:
             - --ignore-not-found
             - apiservice
             - v1alpha1.acme.syseleven.de
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
 ---
 # Grant cert-manager permission to validate using our apiserver
 apiVersion: rbac.authorization.k8s.io/v1
