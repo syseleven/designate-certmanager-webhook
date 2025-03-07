@@ -71,16 +71,33 @@ spec:
             - name: https
               containerPort: 8443
               protocol: TCP
+          {{- if .Values.livenessProbe }}
+          livenessProbe: {{ toYaml .Values.livenessProbe | nindent 12 }}
+          {{- else }}
           livenessProbe:
             httpGet:
               scheme: HTTPS
               path: /healthz
               port: https
+          {{- end}}
+          {{- if .Values.readinessProbe }}
+          readinessProbe: {{ toYaml .Values.readinessProbe | nindent 12 }}
+          {{- else }}
           readinessProbe:
             httpGet:
               scheme: HTTPS
               path: /healthz
               port: https
+          {{- end}}
+          {{- if .Values.startupProbe }}
+          startupProbe: {{ toYaml .Values.startupProbe | nindent 12 }}
+          {{- else }}
+          startupProbe:
+            httpGet:
+              scheme: HTTPS
+              path: /healthz
+              port: https
+          {{- end}}
           volumeMounts:
             - name: certs
               mountPath: /tls
