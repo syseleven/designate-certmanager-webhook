@@ -21,7 +21,7 @@ kubectl:
 imagePullSecrets: []
 
 # This secret holds the authenitcation information for designate
-credentialsSecret: cloud-credentials
+credentialsSecret: cloud-config # use same secret as openstack-cloud-controller-manager https://artifacthub.io/packages/helm/cloud-provider-openstack/openstack-cloud-controller-manager
 
 # If you fill out these information the helm chart will use your provided
 # information and overwrite an existing ${credentialsSecret} secret. If the values
