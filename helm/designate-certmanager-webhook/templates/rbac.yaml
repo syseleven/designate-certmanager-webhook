@@ -16,7 +16,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ include "designate-certmanager-webhook.fullname" . }}:webhook-authentication-reader
-  namespace: {{ .Release.Namespace }}
+  namespace: kube-system
   labels:
     app: {{ include "designate-certmanager-webhook.name" . }}
     chart: {{ include "designate-certmanager-webhook.chart" . }}
