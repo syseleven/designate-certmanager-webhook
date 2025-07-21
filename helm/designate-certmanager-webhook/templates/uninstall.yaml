@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: uninstall-{{ include "designate-certmanager-webhook.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ include "designate-certmanager-webhook.name" . }}
     chart: {{ include "designate-certmanager-webhook.chart" . }}
@@ -37,6 +38,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: {{ include "designate-certmanager-webhook.fullname" . }}:uninstall
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ include "designate-certmanager-webhook.name" . }}
     chart: {{ include "designate-certmanager-webhook.chart" . }}
@@ -63,6 +65,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: {{ include "designate-certmanager-webhook.fullname" . }}:uninstall
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ include "designate-certmanager-webhook.name" . }}
     chart: {{ include "designate-certmanager-webhook.chart" . }}
@@ -85,6 +88,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ include "designate-certmanager-webhook.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ include "designate-certmanager-webhook.name" . }}
     chart: {{ include "designate-certmanager-webhook.chart" . }}

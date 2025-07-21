@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "designate-certmanager-webhook.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ include "designate-certmanager-webhook.name" . }}
     chart: {{ include "designate-certmanager-webhook.chart" . }}
