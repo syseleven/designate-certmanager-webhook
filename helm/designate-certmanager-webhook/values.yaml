@@ -16,7 +16,7 @@ alpine:
 kubectl:
   image:
     repository: registry.k8s.io/kubectl
-    tag: latest
+    tag: v1.33.0
 
 imagePullSecrets: []
 
