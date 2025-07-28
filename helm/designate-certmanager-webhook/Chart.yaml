@@ -2,4 +2,4 @@ apiVersion: v1
 appVersion: "0.2.18"
 description: ACME webhook Implementation for OpenStack Designate
 name: designate-certmanager-webhook
-version: "0.7.2"
+version: "0.7.3"
