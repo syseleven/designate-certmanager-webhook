@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/cert-manager/cert-manager v1.8.0
-	github.com/gophercloud/gophercloud v0.14.0
+	github.com/gophercloud/gophercloud v0.25.0
 	github.com/kubernetes-incubator/external-dns v0.5.12
 	github.com/sirupsen/logrus v1.8.1
 	k8s.io/client-go v0.23.4
@@ -71,7 +71,7 @@ require (
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.19.1 // indirect
-	golang.org/x/crypto v0.0.0-20211117183948-ae814b36b871 // indirect
+	golang.org/x/crypto v0.0.0-20211202192323-5770296d904e // indirect
 	golang.org/x/mod v0.5.0 // indirect
 	golang.org/x/net v0.0.0-20220107192237-5cfca573fb4d // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
