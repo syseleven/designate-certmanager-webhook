@@ -81,7 +81,7 @@ subjects:
   - apiGroup: ""
     kind: ServiceAccount
     name: {{ include "designate-certmanager-webhook.fullname" . }}
-    namespace: default
+    namespace: {{ .Release.Namespace }}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -96,4 +96,3 @@ metadata:
   annotations:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-delete-policy": hook-succeeded
-  namespace: default
