@@ -11,20 +11,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Run check
       run: make check
 
     - name: Run test
       env:
-        TEST_ZONE_NAME: ${{ secrets.TEST_ZONE_NAME }}
-        OS_TENANT_NAME: ${{ secrets.OS_TENANT_NAME }}
-        OS_TENANT_ID: ${{ secrets.OS_PROJECT_ID }}
-        OS_DOMAIN_NAME: ${{ secrets.OS_DOMAIN_NAME }}
-        OS_USERNAME: ${{ secrets.OS_USERNAME }}
-        OS_PASSWORD: ${{ secrets.OS_PASSWORD }}
-        OS_AUTH_URL: ${{ secrets.OS_AUTH_URL }}
-        OS_REGION_NAME: ${{ secrets.OS_REGION_NAME }}
-        OS_PROJECT_ID: ${{ secrets.OS_PROJECT_ID }}
-      run: make test
+        TEST_ZONE_NAME: ${{ vars.TEST_ZONE_NAME }}
+        OS_APPLICATION_CREDENTIAL_ID: ${{ secrets.OS_APPLICATION_CREDENTIAL_ID }}
+        OS_APPLICATION_CREDENTIAL_SECRET: ${{ secrets.OS_APPLICATION_CREDENTIAL_SECRET }}
+        OS_AUTH_TYPE: ${{ vars.OS_AUTH_TYPE }}
+        OS_AUTH_URL: ${{ vars.OS_AUTH_URL }}
+        OS_ENDPOINT_TYPE: ${{ vars.OS_ENDPOINT_TYPE }}
+        OS_IDENTITY_API_VERSION: ${{ vars.OS_IDENTITY_API_VERSION }}
+        OS_INTERFACE: ${{ vars.OS_INTERFACE }}
+        OS_PROJECT_DOMAIN_NAME: ${{ vars.OS_PROJECT_DOMAIN_NAME }}
+        OS_REGION_NAME: ${{ vars.OS_REGION_NAME }}
+        OS_USER_DOMAIN_NAME: ${{ vars.OS_USER_DOMAIN_NAME }}
+      run: |
+        make test
