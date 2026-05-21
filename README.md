@@ -2,6 +2,23 @@
 
 This is an ACME webhook implementation for the [cert-manager](http://docs.cert-manager.io). It works with OpenStack Designate DNSaaS to generate certificates using DNS-01 challenges.
 
+## Continuous integration
+
+GitHub Actions runs two workflows:
+
+- **Test Workflow** (`.github/workflows/test.yml`): On every pull request and push to `master`, the `check` job runs `make check`. On pushes to `master` only, the `test` job also runs `make test` with repository secrets and variables.
+- **PR Integration Test** (`.github/workflows/pr-integration.yml`): After a successful **Test Workflow** run for a pull request, this workflow runs `make test` against the PR head commit. It uses the `openstack-integration` environment so a maintainer must approve before secrets are used (required for third-party fork PRs, where secrets are not available in the initial workflow).
+
+### Repository setup (maintainers)
+
+1. Create an environment named `openstack-integration` under **Settings → Environments**.
+2. Enable **Required reviewers** and add the users or teams who may approve integration test runs.
+3. Keep deployment branch rules permissive for this environment (or verify that `workflow_run` jobs are not blocked), since the job checks out the PR head SHA rather than only `master`.
+4. Ensure repository **Actions** variables and secrets used by `make test` remain configured (same names as in the workflow files).
+5. If `master` uses branch protection with required status checks, update them to the new job names: `check` (and optionally `test` from **Test Workflow** on push) and `test` from **PR Integration Test** for pull requests.
+
+Fork contributors may also need **Approve workflow run** on the first workflow before **Test Workflow** runs; that is separate from approving the `openstack-integration` deployment for **PR Integration Test**.
+
 ## Prerequisites
 
 To use this chart [Helm](https://helm.sh/) must be installed in your Kubernetes cluster. Setting up Kubernetes and Helm and is outside the scope of this README. Please refer to the Kubernetes and Helm documentation. You will also need the [cert-manager](https://github.com/cert-manager/cert-manager). Please refer to the cert-manager [documentation](https://docs.cert-manager.io) for full technical documentation for the project. This README assumes, the cert-manager is installed in the namespace `cert-manager`. Adapt examples accordingly, if you have installed it in a different namespace.
