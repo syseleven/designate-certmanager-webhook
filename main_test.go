@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cert-manager/cert-manager/test/acme/dns"
+	acmetest "github.com/cert-manager/cert-manager/test/acme"
 )
 
 var (
@@ -17,10 +17,10 @@ func TestRunsSuite(t *testing.T) {
 	// ChallengeRequest passed as part of the test cases.
 
 	solver := New()
-	fixture := dns.NewFixture(solver,
-		dns.SetResolvedZone(zone),
-		dns.SetAllowAmbientCredentials(false),
-		dns.SetManifestPath("testdata/my-custom-solver"),
+	fixture := acmetest.NewFixture(solver,
+		acmetest.SetResolvedZone(zone),
+		acmetest.SetAllowAmbientCredentials(false),
+		acmetest.SetManifestPath("testdata/my-custom-solver"),
 	)
 
 	fixture.RunBasic(t)
