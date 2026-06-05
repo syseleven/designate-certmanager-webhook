@@ -6,7 +6,7 @@ on:
     types: [ completed ]
 
 jobs:
-  test:
+  integration-test:
     if: >
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'pull_request'

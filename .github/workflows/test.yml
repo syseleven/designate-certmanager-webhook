@@ -15,26 +15,3 @@ jobs:
 
     - name: Run check
       run: make check
-
-  # when an admin pushes to master, run the integration test without approval
-  test:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Run test
-      env:
-        TEST_ZONE_NAME: ${{ vars.TEST_ZONE_NAME }}
-        OS_APPLICATION_CREDENTIAL_ID: ${{ secrets.OS_APPLICATION_CREDENTIAL_ID }}
-        OS_APPLICATION_CREDENTIAL_SECRET: ${{ secrets.OS_APPLICATION_CREDENTIAL_SECRET }}
-        OS_AUTH_TYPE: ${{ vars.OS_AUTH_TYPE }}
-        OS_AUTH_URL: ${{ vars.OS_AUTH_URL }}
-        OS_ENDPOINT_TYPE: ${{ vars.OS_ENDPOINT_TYPE }}
-        OS_IDENTITY_API_VERSION: ${{ vars.OS_IDENTITY_API_VERSION }}
-        OS_INTERFACE: ${{ vars.OS_INTERFACE }}
-        OS_PROJECT_DOMAIN_NAME: ${{ vars.OS_PROJECT_DOMAIN_NAME }}
-        OS_REGION_NAME: ${{ vars.OS_REGION_NAME }}
-        OS_USER_DOMAIN_NAME: ${{ vars.OS_USER_DOMAIN_NAME }}
-      run: make test
