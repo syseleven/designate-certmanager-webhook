@@ -68,6 +68,7 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 	opts.Name = ch.ResolvedFQDN
 	opts.Type = "TXT"
 	opts.Records = []string{quoteRecord(ch.Key)}
+	opts.TTL = 60
 
 	_, err = recordsets.Create(c.client, allZones[0].ID, opts).Extract()
 	if err != nil {
@@ -113,6 +114,12 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 	allRRs, err := recordsets.ExtractRecordSets(allRecordPages)
 	if err != nil {
 		return fmt.Errorf("failed to extract record sets: %w", err)
+	}
+
+	if len(allRRs) == 0 {
+		// cleanup may happen multiple times, at least in tests
+		// => no error if RS was already deleted
+		return nil
 	}
 
 	if len(allRRs) != 1 {
