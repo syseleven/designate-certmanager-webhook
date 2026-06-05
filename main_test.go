@@ -4,10 +4,17 @@ import (
 	"os"
 	"testing"
 
+	logf "github.com/cert-manager/cert-manager/pkg/logs"
 	acmetest "github.com/cert-manager/cert-manager/test/acme"
+
+	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 func TestRunsSuite(t *testing.T) {
+	logf.InitLogs()
+	defer logf.FlushLogs()
+	ctrl.SetLogger(logf.Log)
+
 	zone := os.Getenv("TEST_ZONE_NAME")
 	if zone == "" {
 		t.Fatalf("TEST_ZONE_NAME is not set")
