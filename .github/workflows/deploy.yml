@@ -1,4 +1,4 @@
-name: Deploy Worklow
+name: Deploy Workflow
 
 on:
   push:
@@ -10,10 +10,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
 
-    - name: Build and Push
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      run: make build ci-push
+      - name: Install Nix
+        uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31.10.6
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Log in to Docker Hub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: echo "$DOCKER_PASSWORD" | podman login -u "$DOCKER_USERNAME" --password-stdin docker.io
+
+      - name: Build and Push multi-arch OCI image
+        env:
+          IMAGE_NAME: syseleven/designate-certmanager-webhook
+        run: |
+          set -euo pipefail
+
+          TAG="${GITHUB_REF_NAME}"
+          REPO="docker.io/${IMAGE_NAME}"
+
+          nix_build_override() {
+            nix build --expr \
+              "(builtins.getFlake \"git+file://$(pwd)?rev=$(git rev-parse HEAD)\").packages.x86_64-linux.${1}.override ${2}"
+          }
+
+          for arch in x86_64-linux aarch64-linux; do
+            nix_build_override oci '{ tag = "'"${TAG}"'"; targetSystem = "'"${arch}"'"; }'
+
+            image=$(podman load < ./result \
+              | awk '/Loaded image/ { sub(/^Loaded image.*: /, ""); sub(/localhost\//, ""); print }')
+
+            podman tag "${image}" "${REPO}:${TAG}-${arch}"
+            podman push "${REPO}:${TAG}-${arch}"
+            podman rmi "${image}" || true
+          done
+
+          for t in "${TAG}" latest; do
+            podman manifest create "${REPO}:${t}" \
+              "${REPO}:${TAG}-x86_64-linux" \
+              "${REPO}:${TAG}-aarch64-linux"
+            podman push "${REPO}:${t}"
+            podman manifest rm "${REPO}:${t}" || true
+          done
