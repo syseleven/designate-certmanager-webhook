@@ -32,7 +32,7 @@ type designateDNSProviderSolver struct {
 func New() webhook.Solver {
 	client, err := createDesignateServiceClient()
 	if err != nil {
-		panic(fmt.Errorf("%v", err))
+		log.Panic(fmt.Errorf("failed to create designate client: %w", err))
 	}
 	return &designateDNSProviderSolver{
 		client: client,
@@ -52,12 +52,12 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 
 	allPages, err := zones.List(c.client, listOpts).AllPages()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to list zones: %w", err)
 	}
 
 	allZones, err := zones.ExtractZones(allPages)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to extract zones: %w", err)
 	}
 
 	if len(allZones) != 1 {
@@ -71,7 +71,7 @@ func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) erro
 
 	_, err = recordsets.Create(c.client, allZones[0].ID, opts).Extract()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create record set: %w", err)
 	}
 
 	return nil
@@ -86,12 +86,12 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 
 	allPages, err := zones.List(c.client, listOpts).AllPages()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to list zones: %w", err)
 	}
 
 	allZones, err := zones.ExtractZones(allPages)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to extract zones: %w", err)
 	}
 
 	if len(allZones) != 1 {
@@ -107,12 +107,12 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 	allRecordPages, err := recordsets.ListByZone(c.client, allZones[0].ID, recordListOpts).AllPages()
 
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to list record sets: %w", err)
 	}
 
 	allRRs, err := recordsets.ExtractRecordSets(allRecordPages)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to extract record sets: %w", err)
 	}
 
 	if len(allRRs) != 1 {
@@ -122,7 +122,7 @@ func (c *designateDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) erro
 	// TODO rather than deleting the whole recordset we may have to delete individual records from it, i.e. perform an update rather than a delete
 	err = recordsets.Delete(c.client, allZones[0].ID, allRRs[0].ID).ExtractErr()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to delete recordset: %w", err)
 	}
 	return nil
 }
@@ -132,7 +132,7 @@ func (c *designateDNSProviderSolver) Initialize(kubeClientConfig *rest.Config, s
 
 	cl, err := createDesignateServiceClient()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create designate client: %w", err)
 	}
 
 	c.client = cl

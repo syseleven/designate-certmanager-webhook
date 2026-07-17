@@ -14,6 +14,7 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -51,7 +52,7 @@ func getAuthSettings() (gophercloud.AuthOptions, error) {
 
 	opts, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
-		return gophercloud.AuthOptions{}, err
+		return gophercloud.AuthOptions{}, fmt.Errorf("failed to get auth options from env: %w", err)
 	}
 	opts.AllowReauth = true
 	if !strings.HasSuffix(opts.IdentityEndpoint, "/") {
@@ -67,17 +68,17 @@ func getAuthSettings() (gophercloud.AuthOptions, error) {
 func createDesignateServiceClient() (*gophercloud.ServiceClient, error) {
 	opts, err := getAuthSettings()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get auth settings: %w", err)
 	}
 	log.Infof("Using OpenStack Keystone at %s", opts.IdentityEndpoint)
 	authProvider, err := openstack.NewClient(opts.IdentityEndpoint)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create auth provider: %w", err)
 	}
 
 	tlsConfig, err := tlsutils.CreateTLSConfig("OPENSTACK")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create TLS config: %w", err)
 	}
 
 	transport := &http.Transport{
@@ -95,7 +96,7 @@ func createDesignateServiceClient() (*gophercloud.ServiceClient, error) {
 	authProvider.HTTPClient.Transport = transport
 
 	if err = openstack.Authenticate(authProvider, opts); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to authenticate: %w", err)
 	}
 
 	eo := gophercloud.EndpointOpts{
@@ -104,7 +105,7 @@ func createDesignateServiceClient() (*gophercloud.ServiceClient, error) {
 
 	client, err := openstack.NewDNSV2(authProvider, eo)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create DNSV2 client: %w", err)
 	}
 	log.Infof("Found OpenStack Designate service at %s", client.Endpoint)
 	return client, nil
