@@ -65,6 +65,8 @@ spec:
             - --tls-cert-file=/tls/tls.crt
             - --tls-private-key-file=/tls/tls.key
             - --secure-port=8443
+            - --dns01-recursive-nameservers=8.8.8.8:53,1.1.1.1:53
+            - --dns01-recursive-nameservers-only
           envFrom:
             - secretRef:
                 name: {{ .Values.credentialsSecret }}
