@@ -5,7 +5,7 @@ go 1.26
 require (
 	github.com/cert-manager/cert-manager v1.20.2
 	github.com/gophercloud/gophercloud v1.14.1
-	github.com/kubernetes-incubator/external-dns v0.5.12
+	github.com/kubernetes-incubator/external-dns v0.21.0
 	github.com/sirupsen/logrus v1.9.3
 	k8s.io/client-go v0.35.2
 	sigs.k8s.io/controller-runtime v0.23.1
