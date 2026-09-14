@@ -5,7 +5,7 @@ It works with OpenStack Designate DNSaaS to generate certificates using DNS-01 c
 
 ## Prerequisites
 
-We recommand [Helm](https://helm.sh/) for installing designate-certmanager-webhook.
+We recommend [Helm](https://helm.sh/) for installing designate-certmanager-webhook.
 Setting up Kubernetes and Helm is outside the scope of this README.
 You will also need [cert-manager](https://github.com/cert-manager/cert-manager).
 Please refer to the cert-manager [documentation](https://docs.cert-manager.io) for full technical documentation on the project.
@@ -20,6 +20,39 @@ The chart will be installed in the same namespace as cert-manager.
 
 ***Optional*** You can choose to pre-create your authentication secret or configure the values via helm.
 If you don't want to configure your credentials via helm, create a kubernetes secret in the cert-manager namespace.
+
+### Required permissions
+
+The credential (user or application credential) must have the `member` role on the OpenStack project that owns the Designate zone. The webhook only performs these Designate operations, so `admin` is not required:
+
+| HTTP call                                              | Used for                                   |
+|--------------------------------------------------------|--------------------------------------------|
+| `GET /v2/zones`                                        | Finding the zone for a challenge (by name) |
+| `POST /v2/zones/{zone_id}/recordsets`                  | Publishing the DNS-01 TXT record           |
+| `GET /v2/zones/{zone_id}/recordsets`                   | Locating the TXT record on cleanup         |
+| `DELETE /v2/zones/{zone_id}/recordsets/{recordset_id}` | Removing the TXT record on cleanup         |
+
+Zones are never created or deleted by the webhook. The project in the credential (`OS_PROJECT_ID`) must be the project that owns the zone.
+Note that role names may differ between clouds; see [syseleven cloud](#permissions-in-syseleven-cloud) below.
+
+### Permissions in SysEleven Cloud
+
+The SysEleven cloud uses different access models depending on the region.
+The Designate operations the webhook needs are listed in [Required permissions](#required-permissions) above.
+
+**Regions `cbk` (Berlin), `dbl` (Berlin), `fes` (Frankfurt)**
+
+These regions offer only two roles: `operator` (create, read, update, delete) and `viewer` (read-only).
+The webhook needs the `operator` role on the project that owns the Designate zone; fine-grained or per-service roles are not available in these regions.
+
+**Regions `ham1` (Hamburg) and `dus2` (Düsseldorf)**
+
+The newer regions use the SysEleven cloud's [IAM](https://documentation.syseleven.de/en/products/iam/) with project-scoped, fine-grained permissions.
+Create a [service account](https://documentation.syseleven.de/en/products/iam/usage/service-accounts/) and grant the following permissions:
+
+- `can_become_dns_member_in_openstack`: write access isolated to the Designate DNS service, read access for listing zones and recordsets
+
+All available permissions are documented in the [IAM authorization model](https://documentation.syseleven.de/en/products/iam/concepts/authorization-model/).
 
 ### Secret with OpenStack User Credentials
 
