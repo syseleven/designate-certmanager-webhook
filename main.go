@@ -29,7 +29,7 @@ type designateDNSProviderSolver struct {
 }
 
 func (c *designateDNSProviderSolver) Name() string {
-	return "designateDNS"
+	return "designatedns"
 }
 
 func (c *designateDNSProviderSolver) Present(ch *v1alpha1.ChallengeRequest) error {
