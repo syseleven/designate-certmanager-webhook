@@ -20,6 +20,16 @@ kubectl:
 
 imagePullSecrets: []
 
+# Additional environment variables for the webhook container
+extraEnvs: []
+#  - name: FOO
+#    value: "bar"
+#  - name: BAZ
+#    valueFrom:
+#      secretKeyRef:
+#        name: my-secret
+#        key: baz
+
 # This secret holds the authenitcation information for designate
 credentialsSecret: cloud-credentials
 
