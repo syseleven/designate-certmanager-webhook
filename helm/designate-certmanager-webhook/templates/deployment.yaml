@@ -73,9 +73,11 @@ spec:
           env:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- if .Values.credentialsSecret }}
           envFrom:
             - secretRef:
                 name: {{ .Values.credentialsSecret }}
+          {{- end }}
           ports:
             - name: https
               containerPort: 8443

@@ -30,7 +30,10 @@ extraEnvs: []
 #        name: my-secret
 #        key: baz
 
-# This secret holds the authenitcation information for designate
+# This secret holds the authenitcation information for designate and is
+# injected into the webhook container via envFrom. Set this to an empty value
+# ("", ~ or null) to disable injection of the Secret into the Deployment, e.g. if
+# you provide the credentials via extraEnvs or extraVolumes instead.
 credentialsSecret: cloud-credentials
 
 # If you fill out these information the helm chart will use your provided
