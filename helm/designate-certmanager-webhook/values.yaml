@@ -67,6 +67,7 @@ resources: {}
   #   memory: 128Mi
 
 podAnnotations: {}
+extraVolumes: []
 
 nodeSelector: {}
 
@@ -80,7 +81,7 @@ probes:
       scheme: HTTPS
       path: /healthz
       port: https
-  
+
   livenessProbe:
     httpGet:
       scheme: HTTPS
