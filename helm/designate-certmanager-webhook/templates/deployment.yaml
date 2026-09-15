@@ -93,6 +93,9 @@ spec:
           secret:
             optional: true
             secretName: {{ include "designate-certmanager-webhook.servingCertificate" . }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
