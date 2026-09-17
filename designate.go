@@ -59,7 +59,7 @@ func getAuthSettings() (gophercloud.AuthOptions, error) {
 		opts.IdentityEndpoint += "/"
 	}
 	if !strings.HasSuffix(opts.IdentityEndpoint, "/v2.0/") && !strings.HasSuffix(opts.IdentityEndpoint, "/v3/") {
-		opts.IdentityEndpoint += "v2.0/"
+		opts.IdentityEndpoint += "v3/"
 	}
 	return opts, nil
 }
