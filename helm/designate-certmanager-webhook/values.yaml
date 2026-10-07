@@ -5,13 +5,13 @@ certManager:
   serviceAccountName: cert-manager
 
 image:
-  repository: syseleven/designate-certmanager-webhook
+  repository: docker.io/syseleven/designate-certmanager-webhook
   tag: 0.2.18
   pullPolicy: IfNotPresent
 
 alpine:
   image:
-    repository: alpine
+    repository: docker.io/library/alpine
     tag: latest
 kubectl:
   image:
