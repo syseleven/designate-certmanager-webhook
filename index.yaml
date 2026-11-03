@@ -2,6 +2,15 @@ apiVersion: v1
 entries:
   designate-certmanager-webhook:
   - apiVersion: v1
+    appVersion: 0.5.0
+    created: "2026-11-03T18:48:12.499974299Z"
+    description: ACME webhook Implementation for OpenStack Designate
+    digest: 624d62ce4a395f2180ebbd01870623aa4c0c52faf60ca415587d1918bfb98154
+    name: designate-certmanager-webhook
+    urls:
+    - https://github.com/syseleven/designate-certmanager-webhook/releases/download/helm-0.11.0/designate-certmanager-webhook-0.11.0.tgz
+    version: 0.11.0
+  - apiVersion: v1
     appVersion: 0.4.0
     created: "2026-09-16T11:10:04.790313199Z"
     description: ACME webhook Implementation for OpenStack Designate
@@ -55,4 +64,4 @@ entries:
     urls:
     - https://github.com/syseleven/designate-certmanager-webhook/releases/download/helm-0.7.7/designate-certmanager-webhook-0.7.7.tgz
     version: 0.7.7
-generated: "2026-09-16T11:10:04.790341362Z"
+generated: "2026-11-03T18:48:12.50028577Z"
