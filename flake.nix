@@ -67,7 +67,7 @@
                 "-X main.version=${version}"
               ];
 
-              vendorHash = "sha256-fOxdojgvCQOhTEWMI96FUxKaDlsib8eL9ks4ull+cUA=";
+              vendorHash = "sha256-yZK9Fo0dcQ1EOUQT7+5K1svUOUdeuI6+I9d5GPhLues=";
 
               doCheck = false; # testing depends on an external network
             };
